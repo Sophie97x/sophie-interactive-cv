@@ -1,0 +1,104 @@
+.cv-heading {
+  padding-top: 60px;
+  padding-bottom: 35px;
+}
+.cv-heading h2 {
+  font-size: clamp(28px, 3vw, 42px);
+  margin: 18px 0;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+.cv-heading h2 span {
+  color: #8e998a;
+}
+.cv-heading > p:last-child {
+  font-size: 13px;
+  color: #9ca794;
+}
+.hobby-year {
+  margin-top: 25px;
+  padding: 25px;
+  border: 1px solid #394331;
+  border-radius: 10px;
+  background: #20271e;
+}
+.hobby-year > p {
+  margin-bottom: 15px;
+}
+.hobby-year button {
+  width: 100%;
+  text-align: left;
+  padding: 14px 0;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid #394331;
+  font-size: 14px;
+}
+.hobby-year button:hover {
+  color: #c8f477;
+}
+.hobby-year time {
+  min-width: 100px;
+  color: #a2b095;
+  font: 11px var(--font-mono);
+}
+.hobby-year button svg {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.responsibilities .tags {
+  margin-top: 20px;
+}
+.project-date {
+  font: 11px/1.6 var(--font-mono);
+  color: #b6c6a5 !important;
+  margin: 15px 0;
+}
+.print-only {
+  display: none;
+}
+@media (max-width: 700px) {
+  .hobby-year {
+    padding: 18px;
+  }
+  .hobby-year button {
+    gap: 10px;
+    font-size: 13px;
+  }
+  .hobby-year time {
+    min-width: 80px;
+    font-size: 10px;
+  }
+}
+@media print {
+  .year-number, .small-date, .career-overview p, .context-strip span, .card-meta span {
+    color: #333 !important;
+  }
+  .print-only {
+    display: block;
+  }
+  .project-summary {
+    display: none;
+  }
+  .cv-heading h2 {
+    font-size: 24pt;
+  }
+  .cv-heading h2 span,
+  .cv-heading > p:last-child,
+  .hobby-year time,
+  .project-date {
+    color: #333 !important;
+  }
+  .hobby-year {
+    background: white;
+    color: #222;
+  }
+  .hobby-year button {
+    break-inside: avoid;
+  }
+  .responsibilities article {
+    break-inside: avoid;
+    border-color: #bbb;
+  }
+}

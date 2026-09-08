@@ -1,0 +1,295 @@
+.experience .workshop {
+  height: 100svh;
+  min-height: 540px;
+  max-height: none;
+}
+.experience .room-topbar {
+  height: 68px;
+  gap: 12px;
+}
+.experience .world-shell {
+  inset: 68px 0 48px;
+}
+.experience .room-topbar nav {
+  margin-left: auto;
+}
+.theme-toggle,
+.room-menu summary,
+.back-to-attic {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #b9aebc;
+  border-radius: 50%;
+  background: #faf5f8;
+  color: #453b50;
+  cursor: pointer;
+}
+.room-menu {
+  position: absolute;
+  top: 82px;
+  right: 3%;
+  z-index: 8;
+}
+.room-menu summary {
+  list-style: none;
+  margin-left: auto;
+}
+.room-menu summary::-webkit-details-marker {
+  display: none;
+}
+.room-menu summary:focus-visible {
+  outline: 3px solid #b67dcc;
+  outline-offset: 4px;
+}
+.room-menu-content {
+  margin-top: 8px;
+  width: 205px;
+  max-height: 65svh;
+  overflow-y: auto;
+  background: #faf5f8;
+  border: 1px solid #d2c7d6;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow: 0 12px 40px #21182920;
+}
+.room-menu-content button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px;
+  text-align: left;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.room-menu-content button:hover {
+  background: #e8ddeb;
+}
+.back-to-attic {
+  position: fixed;
+  right: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom));
+  z-index: 20;
+  box-shadow: 0 4px 20px #24152b26;
+}
+.experience .room-hint {
+  max-width: calc(100% - 110px);
+  white-space: normal;
+  text-align: center;
+  display: flex;
+  left: 50%;
+  bottom: 15px;
+  transform: translateX(-50%);
+  border: 0;
+  background: transparent;
+  font-size: 11px;
+  padding: 6px;
+}
+.experience .room-hover {
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.experience .pet-message {
+  left: 50%;
+  bottom: 120px;
+  transform: translateX(-50%);
+}
+.experience .shelf-intro {
+  top: 80px;
+  left: 4%;
+}
+.experience .shelf-intro h1 {
+  font-size: 25px;
+  margin: 8px 0;
+}
+.experience .shelf-intro > button {
+  margin-bottom: 8px;
+}
+.experience .shelf-intro > p {
+  display: none;
+}
+.experience .shelf-tabs {
+  margin-top: 8px;
+}
+.experience .gallery-open .world-shell {
+  inset: 190px 0 72px;
+}
+.experience .shelf-index {
+  position: absolute;
+  clip-path: inset(50%);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.experience .shelf-index:focus-within {
+  clip-path: none;
+  top: 210px;
+  left: 4%;
+  width: 220px;
+  height: auto;
+  bottom: 85px;
+  padding: 12px;
+  background: #faf5f8;
+  border-radius: 12px;
+}
+.experience .shelf-pagination {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.night .workshop {
+  background: radial-gradient(ellipse at 50% 50%, #30263e, #171622 75%);
+  --room-border: #494052;
+  color: #f0e6f2;
+  color-scheme: dark;
+}
+.night .room-topbar nav {
+  background: #262131;
+  border-color: #4b4057;
+}
+.night .room-nav-active {
+  background: #473b51;
+}
+.night .theme-toggle,
+.night .room-menu summary,
+.night .room-menu-content,
+.night .back-to-attic,
+.night .room-hover,
+.night .shelf-pagination,
+.night .reading-banner {
+  background: #292333;
+  color: #efe7f2;
+  border-color: #51445d;
+}
+.night .room-menu-content button:hover {
+  background: #46364f;
+}
+.night .room-hint,
+.night .room-hover span,
+.night .shelf-pagination > span {
+  color: #c7bace;
+}
+.night .shelf-tabs {
+  background: #403347;
+  color: #ede5f0;
+}
+.night .shelf-tabs > button[aria-pressed='true'] {
+  background: #dac6e0;
+  color: #302337;
+}
+.panel-night {
+  background: #25212d !important;
+  color: #eee5f2 !important;
+  border-color: #52435d !important;
+  color-scheme: dark;
+}
+.panel-night .room-panel-title,
+.panel-night .room-entry h3 {
+  color: #f0e5f2 !important;
+}
+.panel-night .room-panel-description,
+.panel-night .room-entry > p,
+.panel-night .project-facts,
+.panel-night .room-entry-meta,
+.panel-night .room-panel-top {
+  color: #c9bcd0 !important;
+}
+.panel-night .room-tags > span,
+.panel-night .room-panel-top > button {
+  background: #403549;
+  border-color: #57465f;
+  color: #e3d4e9;
+}
+.panel-night a {
+  color: #d8b7ee;
+}
+.panel-night .room-entry {
+  border-color: #51425a;
+}
+@media (max-width: 700px) {
+  .experience .room-contact {
+    display: none;
+  }
+  .experience .room-topbar nav {
+    gap: 2px;
+  }
+  .experience .room-brand {
+    font-size: 14px;
+  }
+  .experience .room-hint {
+    font-size: 10px;
+  }
+  .back-to-attic {
+    right: 12px;
+    bottom: 12px;
+  }
+}
+@media print {
+  .back-to-attic {
+    display: none;
+  }
+}
+.experience .year-section {
+  padding: 30px 0;
+  gap: 5%;
+}
+.experience .year-number {
+  font-size: 42px;
+}
+.experience .year-aside h3 {
+  font-size: 17px;
+  margin-top: 6px;
+}
+.experience .year-count {
+  display: none;
+}
+.experience .milestone-list {
+  gap: 8px;
+}
+.experience .compact-milestone {
+  padding: 0 18px;
+}
+.experience .milestone-toggle {
+  padding: 17px 0;
+  color: #e1e7d9;
+  font-size: 16px;
+  line-height: 1.4;
+  align-items: center;
+  gap: 16px;
+}
+.milestone-toggle [data-slot='accordion-trigger-icon'] {
+  display: none !important;
+}
+.milestone-plus {
+  flex-shrink: 0;
+  color: #c8f477;
+  transition: transform 0.2s;
+}
+.milestone-toggle[aria-expanded='true'] .milestone-plus {
+  transform: rotate(45deg);
+}
+.milestone-body {
+  padding-bottom: 18px;
+}
+.milestone-body > p {
+  color: #a7b39e;
+  font-size: 16px;
+  line-height: 1.7;
+  margin-top: 12px;
+}
+@media print {
+  .compact-milestone [data-slot='accordion-content'] {
+    display: block !important;
+    height: auto !important;
+    content-visibility: visible !important;
+  }
+  .milestone-body {
+    height: auto !important;
+  }
+  .milestone-plus {
+    display: none;
+  }
+}

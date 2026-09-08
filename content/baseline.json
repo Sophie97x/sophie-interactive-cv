@@ -1,0 +1,1433 @@
+{
+  "milestones": [
+    {
+      "id": "m-png-start",
+      "title": "Production line to Material Manager, Procter & Gamble",
+      "date": "2015-01 → 2018-07",
+      "year": 2015,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I started on the production line, then moved into managing materials and a team. A good grounding in keeping things organised when the pressure is on.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-pmp",
+      "title": "PMP — Project Management Professional",
+      "date": "2016",
+      "year": 2016,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I earned my Project Management Professional certification.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-itil",
+      "title": "ITIL Foundation",
+      "date": "2016",
+      "year": 2016,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I earned my ITIL Foundation certification, covering the basics of good IT service management.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-blyth-start",
+      "title": "Founded Blyth Repair",
+      "date": "2018-01 → 2021-01",
+      "year": 2018,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I started my own repair business, bringing computers, phones and consoles back to life. Repairs, customers and the books were all down to me.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-overlap",
+      "title": "Two jobs at once",
+      "date": "2018-01 → 2018-07",
+      "year": 2018,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "For a while I juggled factory work with my repair business, building it up before making the leap.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-bureau",
+      "title": "Bureau Operative, document scanning",
+      "date": "2021-01 → 2022-01",
+      "year": 2021,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I prepared, scanned and checked large batches of documents, making sure clients received clean, accurate copies.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-verisure-start",
+      "title": "Joined Verisure as Head of Telecoms",
+      "date": "2022-08",
+      "year": 2022,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I took charge of company mobiles across the UK and Ireland: devices, SIMs, suppliers and the bills that came with them.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-suspension",
+      "title": "Line suspension programme",
+      "date": "2022-09",
+      "year": 2022,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I tracked down unused mobile lines and stopped the business paying for connections nobody needed.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-line-inventory",
+      "title": "Full line inventory and unattributed-line campaign",
+      "date": "2022-10",
+      "year": 2022,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I matched mystery phone numbers to people and devices, turning a messy mobile inventory into something we could trust.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-sim-projection",
+      "title": "SIM demand forecasting",
+      "date": "2022-10",
+      "year": 2022,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I used starter forecasts and recent demand to plan SIM stock, so new colleagues had what they needed.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-fair-use",
+      "title": "Fair-use policy and high-user reporting",
+      "date": "2022-10 → 2023-03",
+      "year": 2022,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote a clear mobile-data policy and tracked unusual usage, helping teams understand and control their bills.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-arc-quality",
+      "title": "Contact-centre call-quality tracker",
+      "date": "2022-12",
+      "year": 2022,
+      "category": "contact-centre",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I built a call-quality tracker so managers could spot recurring problems and follow them through to a fix.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-1stline",
+      "title": "Promoted to 1st Line IT Support",
+      "date": "2022-12",
+      "year": 2022,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I moved into frontline IT support, helping people with computers, accounts, printers and business systems while keeping my telecoms responsibilities.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-director-packs",
+      "title": "Director usage packs",
+      "date": "2023-03",
+      "year": 2023,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I put mobile usage and invoices into clear packs for directors, making spending easier to understand.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-imei-snapshot",
+      "title": "Estate-wide IMEI to number reconciliation",
+      "date": "2023-03",
+      "year": 2023,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I joined up handset, phone-number, HR and asset records so we could see who had what.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-intune-export",
+      "title": "Intune device inventory baseline",
+      "date": "2023-04",
+      "year": 2023,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I created a reliable starting inventory from Intune, giving the mobile cleanup work a solid foundation.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-setyl",
+      "title": "Asset management migration data",
+      "date": "2023-06",
+      "year": 2023,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I cleaned and matched asset, employee and cost-code records ready for the move to Setyl.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-cost-allocation",
+      "title": "Monthly cost allocation against a shared data plan",
+      "date": "2023-06",
+      "year": 2023,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I matched mobile charges to the right people and teams, making a shared data plan much easier to account for.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-cc-cost-compare",
+      "title": "Contact-centre carrier cost comparison",
+      "date": "2023-09",
+      "year": 2023,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I compared carrier costs for the contact centre, giving the business clear numbers to help choose a supplier.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-ee-migration",
+      "title": "O2 → BT/EE carrier migration",
+      "date": "2023-10 → 2024-09",
+      "year": 2023,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I led the carrier move and organised meetings with O2, BT and Three managers, talking through what we needed. Then I coordinated the SIM swaps and kept branches informed.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-invoice-recon",
+      "title": "Multi-currency invoice reconciliation",
+      "date": "2024-01",
+      "year": 2024,
+      "category": "licensing",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I untangled mobile invoices in pounds and euros, matching charges to the right employees and cost centres.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-sim-list",
+      "title": "Post-migration line reporting",
+      "date": "2024-03",
+      "year": 2024,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I kept the new SIM inventory tidy and flagged leavers’ lines so they were not accidentally reissued.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-tablet-builds",
+      "title": "Tablet and data-SIM build programme",
+      "date": "2024-06",
+      "year": 2024,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I organised tablet and data-SIM builds, keeping the device details and deliveries together so nothing got lost along the way.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-cost-split",
+      "title": "Annual cost split and credit reconciliation",
+      "date": "2024-08",
+      "year": 2024,
+      "category": "licensing",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I checked mobile usage, charges and credits against each other, making sure the cost split actually added up.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-intune-15800",
+      "title": "Full estate device reconciliation",
+      "date": "2024-08",
+      "year": 2024,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I worked through the full device inventory to find missing enrolments and old records that needed cleaning up.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-ee-runbook",
+      "title": "Telecoms runbook",
+      "date": "2024",
+      "year": 2024,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote the telecoms runbook: practical instructions for starter kits, leavers, remote wipes and the jobs the team handles every week.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-senior",
+      "title": "Promoted to Senior Helpdesk Technician",
+      "date": "2024-09",
+      "year": 2024,
+      "category": "career",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I stepped up to Senior Helpdesk Technician, taking on more complex fixes and bigger projects.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-java-wfm",
+      "title": "Java removal broke the workforce management tool",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "When a Java change broke the workforce tool, I worked through the problem and documented the fix for the team.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-isb-fix",
+      "title": "Offline image viewer failure in the Alarm Receiving Centre",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I traced a broken image viewer to file permissions on new PCs, fixed it with the Windows team and requested a repeatable solution.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-forescout",
+      "title": "Network access control introduction",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "identity",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I helped introduce network access controls, explaining the changes to colleagues and writing a practical troubleshooting guide.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-firewall",
+      "title": "Scheduled firewall change for the contact centre",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I coordinated a contact-centre firewall change, briefed the teams and stayed on site to support the switch.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-server-rebuild",
+      "title": "Marketing and BI servers recovered",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "When the marketing and BI servers failed, I helped diagnose the hardware and rebuild them to get the business running again.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-water-detection",
+      "title": "Comms-room water detection system",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I took a water-detection system from idea to installation, working with suppliers and Facilities to protect comms rooms and the wider building.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-confia",
+      "title": "Business-continuity contingency test",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "contact-centre",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I helped plan and run the contact centre’s continuity test, staying on site to support the exercise.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-newbies",
+      "title": "New-starter process documented",
+      "date": "2024-11",
+      "year": 2024,
+      "category": "identity",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I turned new-starter setup into a clear process, covering accounts, access, equipment and who to contact for each system.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-leavers",
+      "title": "Leavers process documented",
+      "date": "2025-01",
+      "year": 2025,
+      "category": "identity",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I documented a careful leaver process: remove access while keeping the records other systems still depend on.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-bt-trunk",
+      "title": "BT trunk swap, London to Newcastle",
+      "date": "2025-01",
+      "year": 2025,
+      "category": "telecoms",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I coordinated the move of the business voice connection from London to Newcastle.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-estate-recon",
+      "title": "UK PC estate reconciliation",
+      "date": "2025-02",
+      "year": 2025,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I brought several competing PC lists together, matching devices to people so the team had a clearer view of the estate.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-red-quail",
+      "title": "Red Quail — IT asset management prototype",
+      "date": "2025-03",
+      "year": 2025,
+      "category": "automation",
+      "status": "prototype",
+      "metrics": [],
+      "stack": [],
+      "description": "I explored a friendlier way to manage IT assets, with screens for stock, assignments and users. This stayed a browser mock-up.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-hash-stick",
+      "title": "USB hardware-hash capture tool",
+      "date": "2025-03",
+      "year": 2025,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I made a one-click USB tool to collect a PC’s enrolment details and save them in a neatly named file.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-ap-print",
+      "title": "Wireless access point upgrades and print infrastructure",
+      "date": "2025-03",
+      "year": 2025,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I upgraded wireless access points, mapped their switch ports and worked on the site’s Canon and Uniflow printing setup.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-meraki",
+      "title": "Cisco Meraki branch wireless upgrade",
+      "date": "2025-05 → 2025-06",
+      "year": 2025,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I travelled around the country upgrading Wi-Fi across all our UK branches, from setting up the kit to testing it on site.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-hardphone",
+      "title": "Contact-centre hardphone to softphone plan",
+      "date": "2025-06",
+      "year": 2025,
+      "category": "contact-centre",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I planned the move from desk phones to software calling, breaking it into manageable stages with risks and workarounds clearly laid out.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-autopilot-rollout",
+      "title": "Windows Autopilot and Intune rollout, Newcastle HQ",
+      "date": "2025-06 → 2025-11",
+      "year": 2025,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I planned and ran a large PC rollout at Newcastle HQ, coordinating rebuilds and replacements department by department so people could keep working.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-locale-script",
+      "title": "Build provisioning script",
+      "date": "2025-06",
+      "year": 2025,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote a PowerShell fix that gives new PCs the right UK keyboard, language and time settings. One less annoying setup job.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-autopilot-export",
+      "title": "Group-wide Autopilot registration baseline",
+      "date": "2025-07",
+      "year": 2025,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I built a clear view of registered PCs so we could check the UK’s enrolment position against the wider group.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-card-reader",
+      "title": "Card Reader utility",
+      "date": "2025-09",
+      "year": 2025,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I built a little desktop app that reads an access card’s ID and copies it to the clipboard. Less typing, fewer mistakes.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-headset",
+      "title": "Headset serial detector",
+      "date": "2025-10",
+      "year": 2025,
+      "category": "automation",
+      "status": "abandoned",
+      "metrics": [],
+      "stack": [],
+      "description": "I experimented with automatically finding headset serial numbers across different platforms and vendor tools. A useful inventory idea, not a finished universal solution.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-backlog",
+      "title": "Autopilot enrolment backlog",
+      "date": "2025-10 → 2026-01",
+      "year": 2025,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I worked the PC enrolment backlog down by matching devices to people and following up the ones still missing.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-wallboards",
+      "title": "Wallboard PC enrolment",
+      "date": "2025-12",
+      "year": 2025,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I collected enrolment details and brought departmental wallboard PCs into managed setup.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-iws-guide",
+      "title": "Contact-centre client upgrade procedure",
+      "date": "2026-01",
+      "year": 2026,
+      "category": "contact-centre",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote a straightforward upgrade guide for the contact-centre client, including how to check the update worked.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-lenovo-eol",
+      "title": "Lenovo end-of-life replacement programme",
+      "date": "2026-02",
+      "year": 2026,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I tracked ageing Lenovo PCs and organised replacements, matching the queue against real devices and warranty records.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-playwright",
+      "title": "Bulk build-request automation",
+      "date": "2026-02",
+      "year": 2026,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I automated repetitive device-build requests with Python and Playwright, letting a script handle the form-filling.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-lost-devices",
+      "title": "Unaccounted device reconciliation",
+      "date": "2026-03",
+      "year": 2026,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I chased missing devices through owners, sites and login records, working out what was found, replaced or written off.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-meeting-rooms",
+      "title": "Meeting room user guide",
+      "date": "2026-04",
+      "year": 2026,
+      "category": "contact-centre",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I made an illustrated meeting-room guide so colleagues could get connected without needing IT beside them.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-m365-licences",
+      "title": "Microsoft 365 and Entra licence position",
+      "date": "2026-06",
+      "year": 2026,
+      "category": "licensing",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I matched Microsoft licences to accounts, spotting missing access and licences we could reclaim.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-guides-2026",
+      "title": "Service-desk procedure guides",
+      "date": "2026-06",
+      "year": 2026,
+      "category": "endpoint",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote step-by-step guides for PC enrolment and the Java fix, with pictures and clear escalation routes.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-contracts-script",
+      "title": "Contract harvesting automation",
+      "date": "2026-06",
+      "year": 2026,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I built a PowerShell tool that finds contract numbers in scanned-document folders, removes duplicates and puts the results into a spreadsheet.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-licensing-register",
+      "title": "Software licensing register and IT budget",
+      "date": "2026-07",
+      "year": 2026,
+      "category": "licensing",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I manage the UK and Ireland software register and IT budget, keeping owners, renewals and costs in one place.",
+      "kind": "milestone"
+    },
+    {
+      "id": "m-app-audit",
+      "title": "Application security and shadow-IT audit",
+      "date": "2026-07",
+      "year": 2026,
+      "category": "identity",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I reviewed business apps for ownership, login security and sensitive data, helping make hidden risks easier to spot.",
+      "kind": "milestone"
+    }
+  ],
+  "ongoing": [
+    {
+      "id": "o-ad-forest",
+      "title": "Active Directory forest diagnosis",
+      "date": "",
+      "year": null,
+      "category": "identity",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I investigate stubborn account lockouts and directory-sync problems, following the logs to work out what is really going wrong.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-ad-audit",
+      "title": "Group membership audit",
+      "date": "",
+      "year": null,
+      "category": "identity",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I used PowerShell to check group memberships, tidy broken references and give the security team a focused report.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-rbac",
+      "title": "Role-based provisioning matrix",
+      "date": "",
+      "year": null,
+      "category": "identity",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I keep a role-by-role guide to equipment, licences and system access, so new starters get the right setup.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-ap-recovery",
+      "title": "Cisco access point recovery",
+      "date": "",
+      "year": null,
+      "category": "infrastructure",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I brought a Cisco access point back from a boot loop using its serial console and some patient troubleshooting.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-docker",
+      "title": "BI server back under control",
+      "date": "",
+      "year": null,
+      "category": "infrastructure",
+      "status": "delivered",
+      "metrics": [],
+      "stack": [],
+      "description": "I recovered Docker access and cleared excessive logs, bringing disk use back under control while keeping the other services unchanged.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-outsourcer",
+      "title": "Third-party secure remote access",
+      "date": "",
+      "year": null,
+      "category": "identity",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote a secure remote-access guide for an outsourcing partner, covering compliant devices, security keys and getting started safely.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-genesys",
+      "title": "Contact-centre real-time reporting",
+      "date": "",
+      "year": null,
+      "category": "contact-centre",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I look after live contact-centre reporting, keeping team views, thresholds and alerts useful for the people running the service.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-wde-rca",
+      "title": "Client version mismatch root cause",
+      "date": "",
+      "year": null,
+      "category": "contact-centre",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I traced a reporting-time mismatch to different client versions and coordinated the update needed to put it right.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-power-automate",
+      "title": "Automated ticket creation",
+      "date": "",
+      "year": null,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I built a flow that turns spreadsheet rows into tickets, saving repetitive work even without an API.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-connectivity",
+      "title": "Connectivity monitoring toolkit",
+      "date": "",
+      "year": null,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I wrote a quiet background toolkit that watches the connection and retries when it drops, without getting in people’s way.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-profile-cleanup",
+      "title": "Orphaned profile cleanup at scale",
+      "date": "",
+      "year": null,
+      "category": "automation",
+      "status": "live",
+      "metrics": [],
+      "stack": [],
+      "description": "I automated checks for abandoned Windows profiles across groups of PCs, removing the ones no longer tied to an account.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-jml",
+      "title": "Joiner, mover and leaver process ownership",
+      "date": "",
+      "year": null,
+      "category": "identity",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I look after joiners, movers and leavers across the UK and Ireland, keeping accounts, access and handovers joined up.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-vendors",
+      "title": "Vendor and contract management",
+      "date": "",
+      "year": null,
+      "category": "licensing",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I work with suppliers on renewals, requirements and costs, translating what the business needs into practical plans.",
+      "kind": "ongoing"
+    },
+    {
+      "id": "o-asset-register",
+      "title": "Mobile asset register and device recovery",
+      "date": "",
+      "year": null,
+      "category": "telecoms",
+      "status": "ongoing",
+      "metrics": [],
+      "stack": [],
+      "description": "I keep mobile asset records in shape and follow up unreturned devices, matching each handset and SIM to its owner.",
+      "kind": "ongoing"
+    }
+  ],
+  "projects": [
+    {
+      "id": "p-autopick",
+      "title": "AutoPick",
+      "date": "2026-08-09",
+      "year": 2026,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "Node.js",
+        "TypeScript",
+        "Docker",
+        "Proxmox LXC",
+        "Cloudflare Tunnel"
+      ],
+      "description": "Too much scrolling, not enough watching. I built a Stremio add-on that ranks streams and picks a suitable quality automatically.",
+      "kind": "project",
+      "url": "https://autopick.click"
+    },
+    {
+      "id": "p-homelab",
+      "title": "Homelab & self-hosted delivery",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "Proxmox VE",
+        "Ubuntu",
+        "PM2",
+        "GitHub Actions",
+        "Tailscale",
+        "macOS",
+        "MacBook"
+      ],
+      "description": "My Lenovo Tiny, big Dell rack server and MacBook. A playground for Linux, macOS, Proxmox and containers: somewhere to try things and learn how to fix them.",
+      "kind": "project"
+    },
+    {
+      "id": "p-meshtastic",
+      "title": "Meshtastic LoRa mesh",
+      "date": "2026-08-13",
+      "year": 2026,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "Meshtastic",
+        "Heltec ESP32-S3",
+        "esptool",
+        "LoRa 868 MHz",
+        "MeshCore"
+      ],
+      "description": "I built a three-node Meshtastic network and set up MeshCore too. Tiny radios, messages over the air and plenty of hands-on learning.",
+      "kind": "project"
+    },
+    {
+      "id": "p-surgewars",
+      "title": "SurgeWars",
+      "date": "2026-08-17",
+      "year": 2026,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "TypeScript",
+        "Vite",
+        "Canvas 2D"
+      ],
+      "description": "I built a playable browser strategy game with solo and online play. Maps, battles and a simulation I can test properly.",
+      "kind": "project"
+    },
+    {
+      "id": "p-money",
+      "title": "Money Dashboard",
+      "date": "2026-06-05",
+      "year": 2026,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "TypeScript",
+        "Bun",
+        "SQLite"
+      ],
+      "description": "I made a local money dashboard to import transactions, sort spending and make the numbers easier to understand.",
+      "kind": "project"
+    },
+    {
+      "id": "p-agents",
+      "title": "Multi-agent development pipeline",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "prototype",
+      "metrics": [],
+      "stack": [
+        "Multi-agent orchestration",
+        "MCP",
+        "LLM routing",
+        "launchd",
+        "cron"
+      ],
+      "description": "I put together a self-hosted team of AI agents with different jobs and a shared task board, then worked on keeping their workflow reliable.",
+      "kind": "project"
+    },
+    {
+      "id": "p-pokedex",
+      "title": "Game collection tracker",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "prototype",
+      "metrics": [],
+      "stack": [
+        "Express",
+        "React 18",
+        "PostgreSQL 15",
+        "Docker Compose"
+      ],
+      "description": "I built a game collection tracker with a React front end, an Express API and a PostgreSQL database, all running in Docker.",
+      "kind": "project"
+    },
+    {
+      "id": "p-brownie",
+      "title": "The Travelling Spoon",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Docker Compose",
+        "nginx"
+      ],
+      "description": "I made a cheerful shop front for a brownie business, with product pages, events and a build-your-own box.",
+      "kind": "project"
+    },
+    {
+      "id": "p-tracker",
+      "title": "Workload Tracker",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "Single-file HTML/CSS/JS"
+      ],
+      "description": "A little desk-status page that says how busy I am with a colour, an emoji and a friendly message.",
+      "kind": "project"
+    },
+    {
+      "id": "p-auto-internet",
+      "title": "Auto Internet",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "VBScript",
+        "Windows batch"
+      ],
+      "description": "I made a background connection watcher that checks the network and tries to reconnect when it drops.",
+      "kind": "project"
+    },
+    {
+      "id": "p-tools",
+      "title": "Small utilities",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "live",
+      "metrics": [],
+      "stack": [
+        "Python",
+        "PowerShell"
+      ],
+      "description": "Little tools for annoying jobs: protecting batches of PDFs, exporting emails and making everyday tasks less repetitive.",
+      "kind": "project"
+    },
+    {
+      "id": "p-upscaler",
+      "title": "Image upscaler",
+      "date": "",
+      "year": null,
+      "category": "personal",
+      "status": "abandoned",
+      "metrics": [],
+      "stack": [
+        "Python",
+        "Pillow"
+      ],
+      "description": "I explored local image upscaling. The basic resizing worked, but the AI-model routes hit toolchain problems, so this remains an experiment.",
+      "kind": "project"
+    },
+    {
+      "id": "p-interactive-cv",
+      "title": "Sophie’s attic",
+      "date": "",
+      "year": null,
+      "status": "live",
+      "description": "My CV, turned into a little interactive attic. Pick up projects, explore my homelab and say hello to the quail.",
+      "stack": [
+        "React",
+        "TypeScript",
+        "Three.js"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project",
+      "url": "https://github.com/Sophie97x/sophie-interactive-cv"
+    },
+    {
+      "id": "p-heltec-case",
+      "title": "Heltec V4 + SlideKB handheld",
+      "date": "2026-08-06",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A pocket radio with a hidden sliding keyboard. I worked on the case, mechanism and print files; a physical test print or assembly is not confirmed.",
+      "stack": [
+        "Python",
+        "trimesh",
+        "CAD",
+        "Bambu Studio",
+        "STL / 3MF",
+        "PLA / PETG"
+      ],
+      "category": "making",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-simpsons",
+      "title": "Simpsons Pi mini TV",
+      "date": "2026-09-01",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A tiny TV-shaped Raspberry Pi player, just for fun. The model and slicing checks are done; the physical print and fit are not confirmed.",
+      "stack": [
+        "Raspberry Pi",
+        "Python",
+        "CAD",
+        "PETG",
+        "Bambu Studio",
+        "3MF"
+      ],
+      "category": "making",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-hermes",
+      "title": "Hermes Agent Hub",
+      "date": "2026-07-15",
+      "year": 2026,
+      "status": "live",
+      "description": "I built a little browser office for AI agents, with animated desks, live updates and a place to see what everyone is doing.",
+      "stack": [
+        "React",
+        "FastAPI",
+        "Vite",
+        "SSE",
+        "Python"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-red-quail-dashboard",
+      "title": "Red Quail dashboard",
+      "date": "2026-06-05",
+      "year": 2026,
+      "status": "live",
+      "description": "A self-hosted home for money tracking and scheduled jobs. Different project, same fondness for the Red Quail name.",
+      "stack": [
+        "TypeScript",
+        "Bun",
+        "SQLite",
+        "PWA",
+        "GitHub Actions",
+        "PM2"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-pantry",
+      "title": "Pantry Expiry Tracker",
+      "date": "",
+      "year": null,
+      "status": "live",
+      "description": "I made a pantry tracker that keeps an eye on expiry dates. Add food, import a list and spot what needs eating first.",
+      "stack": [
+        "React",
+        "TypeScript",
+        "localStorage"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-household",
+      "title": "Household Maintenance Tracker",
+      "date": "2026-07-16",
+      "year": 2026,
+      "status": "live",
+      "description": "A little app for all those household jobs that are easy to forget. It keeps track of what is due next and what is overdue.",
+      "stack": [
+        "Flask",
+        "SQLite",
+        "HTML / CSS"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-storysketch",
+      "title": "StorySketch Studio",
+      "date": "2026-07-29",
+      "year": 2026,
+      "status": "live",
+      "description": "I explored turning an audiobook moment into a hand-drawn-style animatic, keeping the original audio while giving the scene a visual life.",
+      "stack": [
+        "AI tooling",
+        "Web application",
+        "Audio / visual workflows"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-ai-market",
+      "title": "AI Market Tracker",
+      "date": "2026-06-12",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A demo-account market scanner where I explore data, trade checks and risk controls. Practice only, not a claim of profitable trading.",
+      "stack": [
+        "Python",
+        "TypeScript",
+        "API integration",
+        "Simulation"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-train",
+      "title": "Train Tracker",
+      "date": "2026-06-01",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A train-map demo with moving routes and search controls. The trains are simulated, not live tracking.",
+      "stack": [
+        "React",
+        "Vite",
+        "Maps",
+        "Simulated data"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-nhs",
+      "title": "NHS Data Pull",
+      "date": "2026-06-25",
+      "year": 2026,
+      "status": "prototype",
+      "description": "I worked on a Python export tool that turns collected data into an Excel workbook. Development and testing are recorded; completion is not confirmed.",
+      "stack": [
+        "Python",
+        "Excel / XLSX",
+        "Data processing"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-spanish",
+      "title": "Spanish Cards",
+      "date": "2026-07-15",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A browser flashcard project for practising Spanish. The code is there, but the full build is not confirmed complete.",
+      "stack": [
+        "React",
+        "TypeScript",
+        "Accessibility"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-bobcat",
+      "title": "Bobcat 300 Meshpoint",
+      "date": "2026-08-04",
+      "year": 2026,
+      "status": "prototype",
+      "description": "I made a Bobcat flashing guide and setup wizard, giving retired mining hardware a new mesh-radio adventure. The guide is on GitHub; hardware reception is still unconfirmed.",
+      "stack": [
+        "HTML",
+        "Shell",
+        "LoRa",
+        "SX1302",
+        "Hardware diagnostics"
+      ],
+      "category": "making",
+      "metrics": [],
+      "kind": "project",
+      "url": "https://github.com/Sophie97x/bobcat-meshpoint"
+    },
+    {
+      "id": "p-paper-trading",
+      "title": "Paper trading lab",
+      "date": "2026-07-30",
+      "year": 2026,
+      "status": "prototype",
+      "description": "A paper-trading lab for exploring market scanners, simulations and risk controls. No real-money performance claims, just experiments and learning.",
+      "stack": [
+        "TypeScript",
+        "Simulation",
+        "Risk controls",
+        "Monitoring"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-browser-sandbox",
+      "title": "Browser workflow sandbox",
+      "date": "2026-08-20",
+      "year": 2026,
+      "status": "research",
+      "description": "I explored a browser workflow with a person reviewing the important steps. Research and planning, not a finished automated service.",
+      "stack": [
+        "Browser automation",
+        "Workflow design"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-metro",
+      "title": "Nexus Metro Tracker",
+      "date": "",
+      "year": null,
+      "status": "research",
+      "description": "An early idea for a Metro app. Still an exploration, without a completed app or verified live transport data.",
+      "stack": [
+        "Transport data",
+        "Interface prototyping"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-ai-video",
+      "title": "AI Video experiments",
+      "date": "",
+      "year": null,
+      "status": "research",
+      "description": "I explored AI video workflows in a development project. An experiment rather than a finished production tool.",
+      "stack": [
+        "Creative tooling",
+        "AI workflows"
+      ],
+      "category": "personal",
+      "metrics": [],
+      "kind": "project"
+    },
+    {
+      "id": "p-door",
+      "title": "Door-system exploration",
+      "date": "",
+      "year": null,
+      "status": "research",
+      "description": "I researched door-access hardware and reviewed an AXIS setup. Research only, not a completed installation.",
+      "stack": [
+        "Hardware research",
+        "Access systems"
+      ],
+      "category": "making",
+      "metrics": [],
+      "kind": "project"
+    }
+  ],
+  "skills": [
+    {
+      "title": "Endpoint & device",
+      "description": "Setting up, managing and replacing PCs and mobiles with Autopilot, Intune, Entra ID, Knox and Jamf."
+    },
+    {
+      "title": "Identity & access",
+      "description": "Sorting out accounts, permissions, group policies and stubborn login problems across Active Directory and Entra ID."
+    },
+    {
+      "title": "Networking & telecoms",
+      "description": "Branch Wi-Fi, Cisco kit, carrier moves and business mobiles, from supplier conversations to hands-on troubleshooting."
+    },
+    {
+      "title": "Scripting & automation",
+      "description": "PowerShell, Python, Playwright and Power Automate for the jobs nobody wants to repeat by hand."
+    },
+    {
+      "title": "Cloud, licensing & asset",
+      "description": "Keeping software licences, assets, supplier renewals and budgets organised and useful."
+    },
+    {
+      "title": "Service & contact centre",
+      "description": "Helping colleagues, solving incidents and keeping contact-centre tools, reports and guides working for the team."
+    },
+    {
+      "title": "Data & reporting",
+      "description": "Joining messy data together in Excel, building useful reports and turning spreadsheets into answers."
+    },
+    {
+      "title": "Infrastructure & platforms",
+      "description": "Windows Server, Linux, Proxmox and Docker, plus the hardware, networking and troubleshooting underneath."
+    }
+  ]
+}
