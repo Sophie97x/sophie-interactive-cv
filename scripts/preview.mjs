@@ -1,37 +1,26 @@
-import { createServer } from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
-import { resolve, extname, sep } from 'node:path';
+import { createApp } from './server.mjs';
 
-const root = resolve('dist/client');
 const port = Number(process.env.PORT || 5192);
-const types = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.svg': 'image/svg+xml',
-  '.json': 'application/json',
-  '.rsc': 'text/x-component',
-  '.woff2': 'font/woff2',
-};
-createServer(async (req, res) => {
-  try {
-    const pathname = decodeURIComponent(
-      new URL(req.url, 'http://localhost').pathname,
-    );
-    let path = resolve(root, '.' + pathname);
-    if (!path.startsWith(root + sep) && path !== root)
-      throw new Error('Invalid path');
-    if ((await stat(path)).isDirectory()) path = resolve(path, 'index.html');
-    res.setHeader(
-      'Content-Type',
-      types[extname(path)] || 'application/octet-stream',
-    );
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.end(await readFile(path));
-  } catch {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not found');
-  }
-}).listen(port, '127.0.0.1', () =>
-  console.log(`Static preview: http://127.0.0.1:${port}`),
+const origin = process.env.PUBLIC_ORIGIN || `http://localhost:${port}`;
+if (
+  process.env.NODE_ENV === 'production' &&
+  (!process.env.PUBLIC_ORIGIN || new URL(origin).protocol !== 'https:')
+)
+  throw new Error('Set PUBLIC_ORIGIN to your public https:// hostname.');
+const app = createApp({
+  origin,
+  dbPath: process.env.DATABASE_PATH || 'data/attic.sqlite',
+  maxProfiles: Number(process.env.MAX_PROFILES || 1000),
+  publishing: process.env.ENABLE_PUBLISHING !== 'false',
+  trustCloudflare: process.env.TRUST_CLOUDFLARE === 'true',
+});
+app.server.listen(port, process.env.HOST || '127.0.0.1', () =>
+  console.log(`Attic is ready on port ${port}. Public address: ${origin}`),
 );
+for (const signal of ['SIGINT', 'SIGTERM'])
+  process.on(signal, () =>
+    app.server.close(() => {
+      app.close();
+      process.exit(0);
+    }),
+  );

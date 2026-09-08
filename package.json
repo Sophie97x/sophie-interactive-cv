@@ -3,14 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=22.16.0"
   },
   "scripts": {
     "dev": "vinext dev",
     "build": "vinext build",
-    "start": "node scripts/preview.mjs",
+    "start": "node --experimental-strip-types scripts/preview.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types scripts/verify-content.mjs",
+    "test": "node --experimental-strip-types scripts/verify-content.mjs && node --experimental-strip-types --test scripts/verify-publishing.mjs",
     "lint": "oxlint",
     "format": "oxfmt"
   },

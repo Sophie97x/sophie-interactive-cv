@@ -294,6 +294,9 @@ export default function Workshop() {
             <a href="#projects">
               <Code2 size={15} /> All projects
             </a>
+            {/* Full navigation opens the self-hosted editor shell. */}
+            {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+            <a href="/edit">Make your own ↗</a>
           </nav>
           <button
             className="theme-toggle"

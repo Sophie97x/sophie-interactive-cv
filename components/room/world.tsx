@@ -16,6 +16,7 @@ import {
 } from '@react-three/fiber';
 import * as THREE from 'three';
 import Chair from './gaming-chair';
+import { RoomAppearance } from './appearance';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
   Box,
@@ -125,6 +126,7 @@ function Screen({
   variant?: number;
 }) {
   const moving = useContext(MotionContext);
+  const { name, personalized } = useContext(RoomAppearance);
   const screenMaterial = useRef<THREE.MeshBasicMaterial>(null),
     screenTime = useRef(0);
   useFrame((_, dt) => {
@@ -154,26 +156,36 @@ function Screen({
     x.fillStyle = '#ecf1df';
     x.font = 'bold 43px monospace';
     x.fillText(
-      variant ? 'little things, built.' : "hello, i'm sophie :)",
+      variant
+        ? 'little things, built.'
+        : `hello, i'm ${name.split(' ')[0].slice(0, 16) || 'you'} :)`,
       34,
       116,
     );
     x.font = '23px monospace';
-    const lines = variant
+    const lines = personalized
       ? [
-          '> software + hardware',
-          '> ideas into working things',
-          '> always learning something',
+          '> welcome to my little room',
+          '> a few things about me',
+          '> have a look around',
           '',
-          '  [ all projects ] ↗',
+          '  [ explore my story ] ↗',
         ]
-      : [
-          '> support. build. automate.',
-          '> Windows / Linux / networks',
-          '> Python / PowerShell / TypeScript',
-          '',
-          '  [ explore my journey ] ↗',
-        ];
+      : variant
+        ? [
+            '> software + hardware',
+            '> ideas into working things',
+            '> always learning something',
+            '',
+            '  [ all projects ] ↗',
+          ]
+        : [
+            '> support. build. automate.',
+            '> Windows / Linux / networks',
+            '> Python / PowerShell / TypeScript',
+            '',
+            '  [ explore my journey ] ↗',
+          ];
     lines.forEach((s, i) => {
       x.fillStyle = i === 4 ? '#f4c197' : '#b5d1c2';
       x.fillText(s, 35, 177 + i * 47);
@@ -181,7 +193,7 @@ function Screen({
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
-  }, [variant]);
+  }, [variant, name, personalized]);
   useEffect(() => () => texture.dispose(), [texture]);
   return (
     <group position={position} rotation={rotation}>

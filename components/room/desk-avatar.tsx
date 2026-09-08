@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useContext, useEffect, useMemo, useRef } from 'react';
+import { RoomAppearance } from './appearance';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Box, Cyl } from './props';
@@ -44,6 +45,7 @@ function Limb({
 }
 
 function WavyHair() {
+  const { hair } = useContext(RoomAppearance);
   const locks = useMemo(
     () =>
       Array.from({ length: 28 }, (_, i) => {
@@ -69,13 +71,19 @@ function WavyHair() {
       <Soft
         at={[0, -0.19, -0.09]}
         size={[0.225, 0.43, 0.135]}
-        color="#8c3b35"
+        color={hair === '#963f3a' ? '#8c3b35' : hair}
       />
       {locks.map((curve, i) => (
         <mesh key={i} castShadow>
           <tubeGeometry args={[curve, 32, 0.023 - (i % 3) * 0.003, 8, false]} />
           <meshStandardMaterial
-            color={['#943f37', '#a54c3e', '#81353b', '#b25b45'][i % 4]}
+            color={
+              hair === '#963f3a'
+                ? ['#943f37', '#a54c3e', '#81353b', '#b25b45'][i % 4]
+                : new THREE.Color(hair).multiplyScalar(
+                    [1, 1.1, 0.87, 1.18][i % 4],
+                  )
+            }
             roughness={0.8}
           />
         </mesh>
@@ -128,9 +136,7 @@ export function DeskAvatar({ motion }: { motion: boolean }) {
     glow = useRef<THREE.PointLight>(null);
   const upperArms = useRef<(THREE.Mesh | null)[]>([]);
   const elbows = useRef<(THREE.Group | null)[]>([]);
-  const skin = '#efc6b5',
-    hoodie = '#5683a9',
-    hair = '#963f3a';
+  const { skin, hoodie, hair } = useContext(RoomAppearance);
   const moveArm = (mesh: THREE.Mesh | null, elbow: V3, hand: V3) => {
     if (!mesh) return;
     const start = new THREE.Vector3(...elbow),
@@ -333,7 +339,7 @@ export function DeskAvatar({ motion }: { motion: boolean }) {
                 key={x}
                 at={[x, 0.024, 0.043]}
                 size={[0.012, 0.005, 0.012]}
-                color="#e4b4a2"
+                color={skin === '#efc6b5' ? '#e4b4a2' : skin}
               />
             ))}
             {side < 0 && (
