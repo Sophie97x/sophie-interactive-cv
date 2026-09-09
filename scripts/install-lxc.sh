@@ -16,13 +16,13 @@ cd "$task_tmp"
 curl --fail --location --proto '=https' --tlsv1.2 -o node.tar.xz https://nodejs.org/dist/v22.23.2/node-v22.23.2-linux-x64.tar.xz
 printf '%s\n' 'd60acfe00a2932254bb0ad20e01b0d74397a0875595de719654b214f4b03f307  node.tar.xz' | sha256sum --check -
 tar -xJf node.tar.xz -C /usr/local --strip-components=1
-node --version
+/usr/local/bin/node --version
 id attic >/dev/null 2>&1 || useradd --system --create-home --home-dir /opt/attic --shell /usr/sbin/nologin attic
 install -d -m 700 -o attic -g attic /var/lib/attic
 install -d -m 755 -o attic -g attic /opt/attic
 cp -a "$install_source" /opt/attic/app
 chown -R attic:attic /opt/attic/app
-runuser -u attic -- sh -c 'cd /opt/attic/app && npm ci && npm run typecheck && npm run lint && npm run build && npm test'
+runuser -u attic -- env PATH=/usr/local/bin:/usr/bin:/bin sh -c 'cd /opt/attic/app && npm ci && npm run typecheck && npm run lint && npm run build && npm test'
 chown -R root:root /opt/attic/app
 install -d -m 755 /etc/attic
 printf 'PUBLIC_ORIGIN=%s\n' "$PUBLIC_ORIGIN" > /etc/attic/environment
