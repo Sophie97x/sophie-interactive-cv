@@ -7,7 +7,8 @@
   color-scheme: light;
   color: #292737;
   background: #faf9f6;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Noto Color Emoji';
   font-size: 15px;
   line-height: 1.6;
 }
@@ -851,9 +852,10 @@
 /* ------------------------------------------------ room controls */
 
 .studio-sub {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   color: #6b6577;
   margin: 18px 0 2px;
 }
@@ -893,17 +895,47 @@
 }
 
 .studio-zones {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 6px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
+/* The whole row is the target. A bare native checkbox is 13px, which clears
+   WCAG 2.5.8 only through the user-agent exception and is well under the ~40px
+   every design system actually asks for. */
 .studio-zone {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 40px;
   font-size: 0.87rem;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  border-radius: 8px;
+}
+.studio-zone:hover {
+  background: #faf8fd;
+}
+.studio-zone:has(input:focus-visible) {
+  outline: 3px solid #826cd8;
+  outline-offset: -1px;
+}
+/* Now that the child sits directly beneath its parent, the connector points at
+   the right row. */
+.studio-zone.is-child {
+  padding-left: 30px;
+  position: relative;
+}
+.studio-zone.is-child::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: -8px;
+  bottom: 50%;
+  width: 9px;
+  border-left: 1px solid var(--studio-line, #cfc9dd);
+  border-bottom: 1px solid var(--studio-line, #cfc9dd);
+  border-bottom-left-radius: 5px;
 }
 .studio-zone input {
   accent-color: var(--studio-ink, #7059ce);
@@ -976,9 +1008,15 @@
   display: flex;
   gap: 6px;
 }
-.studio-stepper button {
-  min-width: 34px;
-  height: 32px;
+/* The count is a real radio group now; the label is the visible control and
+   the native input sits behind it, so arrow keys and aria-checked come free. */
+.studio-stepper label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 40px;
   border: 1px solid var(--studio-line, #ddd8e6);
   background: #fff;
   border-radius: 8px;
@@ -986,24 +1024,62 @@
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s;
 }
-.studio-stepper button:hover {
+.studio-stepper label:hover {
   border-color: #b3a9cf;
 }
-.studio-stepper button.is-on {
+.studio-stepper label.is-on {
   border-color: var(--studio-ink, #7059ce);
   background: #f1edff;
   font-weight: 500;
 }
-.studio-posters button {
-  width: 32px;
-  min-width: 32px;
+.studio-stepper input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.studio-stepper label:has(input:focus-visible) {
+  outline: 3px solid #826cd8;
+  outline-offset: 2px;
+}
+
+/* Shipped configurators draw their swatches far larger than 32px, and a colour
+   ring alone would carry the selected state on hue only (WCAG 1.4.1), so the
+   chosen ones also get a tick. */
+.studio-posters label {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
   border-radius: 50%;
   border: 2px solid transparent;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  padding: 0;
 }
-.studio-posters button.is-on {
+.studio-posters label.is-on {
   border-color: #2b2434;
   background-clip: padding-box;
+}
+.studio-posters label.is-on::after {
+  content: '';
+  width: 13px;
+  height: 8px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg) translate(1px, -2px);
+  filter: drop-shadow(0 0 1.5px rgba(0, 0, 0, 0.45));
+}
+/* At the limit an unchosen swatch is refused rather than silently ignored. */
+.studio-posters label.is-full {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.studio-limit {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #817a87;
 }
 
 /* A zone that stands on another one's furniture greys out when that one is
@@ -1056,7 +1132,11 @@
   border-radius: 14px;
   background: #fffefd;
   margin: 0 0 10px;
-  overflow: hidden;
+  /* overflow:hidden clips to the padding box, which would cut the 3px focus
+     ring off any control near the card edge. clip + a margin keeps the rounded
+     corners without eating the indicator (WCAG 2.4.11). */
+  overflow: clip;
+  overflow-clip-margin: 8px;
 }
 .studio-group + .studio-reset {
   margin-top: 6px;
@@ -1223,4 +1303,52 @@
 }
 .studio-welcome.is-compact p {
   display: none;
+}
+
+
+/* --------------------------------------------- fieldsets and sr-only text */
+/*
+ * A styled heading above a group of checkboxes is invisible to a screen reader
+ * — tabbing into the list announced each label with no idea what group it
+ * belonged to, and the "up to three" rule was announced nowhere (WCAG 3.3.2).
+ * A real fieldset/legend fixes both and costs nothing visually.
+ */
+.studio-fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.studio-fieldset > legend {
+  padding: 0;
+}
+/* Inside a card the first group needs no extra air above its legend. */
+.studio-group-body > .studio-fieldset:first-child > legend.studio-sub {
+  margin-top: 12px;
+}
+.studio-stepper > legend {
+  float: left;
+  padding: 0;
+  /* A shared width so the plant row and the poster row line up rather than
+     each starting wherever its own label happens to end. */
+  min-width: 9rem;
+  font-size: 0.87rem;
+  line-height: 42px;
+}
+.studio-stepper::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.studio-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

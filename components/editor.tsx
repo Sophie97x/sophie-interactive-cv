@@ -58,6 +58,39 @@ const emptyDraft = (): Draft => ({
   revision: 0,
 });
 const steps = ['About you', 'Experience', 'Projects', 'Your room', 'Share it'];
+
+const zoneLabels: Record<ZoneId, string> = {
+  desk: 'Desk & screens',
+  printer: '3D printer',
+  homelab: 'Homelab',
+  repair: 'Workbench',
+  radio: 'Radio corner',
+  projects: 'Hobby shelf',
+  work: 'Work shelf',
+};
+
+/*
+ * Render order for the zone list. A zone that stands on another one's furniture
+ * is drawn directly beneath it so the dependency reads straight down the column
+ * — in a two-column grid the child landed beside an unrelated row and the
+ * relationship was unreadable.
+ */
+const zoneOrder: ZoneId[] = zoneIds.flatMap((id) =>
+  zoneRequires[id]
+    ? []
+    : [id, ...zoneIds.filter((child) => zoneRequires[child] === id)],
+);
+
+const posterChoices = [
+  ['#e8749c', 'Pink'],
+  ['#6f9e77', 'Green'],
+  ['#5fa0b8', 'Blue'],
+  ['#e0a05e', 'Amber'],
+  ['#8d7ce8', 'Violet'],
+  ['#dc6a5a', 'Red'],
+] as const;
+
+const MAX_POSTERS = 3;
 async function api(path: string, method = 'GET', body?: unknown, key?: string) {
   const response = await fetch(`/api/${path}`, {
     method,
@@ -154,6 +187,23 @@ export default function Editor() {
   const [openSlug, setOpenSlug] = useState('');
   const [openKey, setOpenKey] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  /*
+   * Which room cards are open. Held up here rather than left to the DOM so
+   * stepping away to "Share it" and back does not collapse everything the user
+   * had opened — GOV.UK ship the same remembered-expanded behaviour.
+   */
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+    'The room': true,
+  });
+  const group = (title: string) => ({
+    open: !!openGroups[title],
+    onToggle: (e: React.SyntheticEvent<HTMLDetailsElement>) => {
+      // currentTarget is nulled once the handler returns, so read it now
+      // rather than inside the state updater, which runs later.
+      const isOpen = e.currentTarget.open;
+      setOpenGroups((g) => ({ ...g, [title]: isOpen }));
+    },
+  });
   const [importing, setImporting] = useState(false);
   const [importSummary, setImportSummary] = useState<{
     filled: string[];
@@ -295,12 +345,17 @@ export default function Editor() {
 
   function togglePoster(color: string) {
     const current = draft.profile.room?.posters ?? [];
-    roomField(
-      'posters',
-      current.includes(color)
-        ? current.filter((c) => c !== color)
-        : [...current, color].slice(0, 3),
-    );
+    if (current.includes(color)) {
+      roomField(
+        'posters',
+        current.filter((c) => c !== color),
+      );
+      return;
+    }
+    // At the limit the old code appended and then sliced the new colour back
+    // off, so the click did nothing at all. Refuse it visibly instead.
+    if (current.length >= MAX_POSTERS) return;
+    roomField('posters', [...current, color]);
   }
 
   function toggleZone(id: ZoneId) {
@@ -624,7 +679,9 @@ export default function Editor() {
                     'The jobs, studies and experiences that got you here.',
                     'Big ideas, small experiments, things you’re proud of.',
                     'A few little details to make this space feel like yours.',
-                    staticHosting ? 'Check your details. Create a link. Let people in.' : 'Pick your address. Check the details. Let people in.',
+                    staticHosting
+                      ? 'Check your details. Create a link. Let people in.'
+                      : 'Pick your address. Check the details. Let people in.',
                   ][step]
                 }
               </p>
@@ -823,7 +880,7 @@ export default function Editor() {
                 })()}
               {step === 3 && (
                 <>
-                  <details className="studio-group" open>
+                  <details className="studio-group" {...group('The room')}>
                     <summary>
                       <span>The room</span>
                       <small>Kind of space, palette and time of day</small>
@@ -968,7 +1025,7 @@ export default function Editor() {
                       </div>
                     </div>
                   </details>
-                  <details className="studio-group">
+                  <details className="studio-group" {...group("What's in it")}>
                     <summary>
                       <span>What’s in it</span>
                       <small>
@@ -976,51 +1033,48 @@ export default function Editor() {
                       </small>
                     </summary>
                     <div className="studio-group-body">
-                      <h3 className="studio-sub">What to show</h3>
-                      <div className="studio-zones">
-                        {zoneIds.map((id) => {
-                          const chosen =
-                            profile.room?.zones ?? defaultRoom.zones;
-                          const on = chosen.includes(id);
-                          // Some zones stand on another one's furniture.
-                          const needs = zoneRequires[id] as ZoneId | undefined;
-                          const blocked = needs
-                            ? !chosen.includes(needs)
-                            : false;
-                          const labels = {
-                            desk: 'Desk & screens',
-                            printer: '3D printer',
-                            homelab: 'Homelab',
-                            repair: 'Workbench',
-                            radio: 'Radio corner',
-                            projects: 'Hobby shelf',
-                            work: 'Work shelf',
-                          } as const;
-                          return (
-                            <label
-                              key={id}
-                              className={`studio-zone${blocked ? ' is-blocked' : ''}`}
-                            >
-                              <input
-                                type="checkbox"
-                                checked={on && !blocked}
-                                disabled={blocked}
-                                onChange={() => toggleZone(id)}
-                              />
-                              <span>
-                                {labels[id]}
-                                {needs && (
-                                  <small>
-                                    {' '}
-                                    · {blocked ? 'needs' : 'sits on'} the{' '}
-                                    {labels[needs].toLowerCase()}
-                                  </small>
-                                )}
-                              </span>
-                            </label>
-                          );
-                        })}
-                      </div>
+                      <fieldset className="studio-fieldset">
+                        <legend className="studio-sub">What to show</legend>
+                        <div className="studio-zones">
+                          {zoneOrder.map((id) => {
+                            const chosen =
+                              profile.room?.zones ?? defaultRoom.zones;
+                            const on = chosen.includes(id);
+                            // Some zones stand on another one's furniture.
+                            const needs = zoneRequires[id] as
+                              | ZoneId
+                              | undefined;
+                            const blocked = needs
+                              ? !chosen.includes(needs)
+                              : false;
+                            return (
+                              <label
+                                key={id}
+                                className={`studio-zone${
+                                  needs ? ' is-child' : ''
+                                }${blocked ? ' is-blocked' : ''}`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={on && !blocked}
+                                  disabled={blocked}
+                                  onChange={() => toggleZone(id)}
+                                />
+                                <span>
+                                  {zoneLabels[id]}
+                                  {needs && (
+                                    <small>
+                                      {' '}
+                                      · {blocked ? 'needs' : 'sits on'} the{' '}
+                                      {zoneLabels[needs].toLowerCase()}
+                                    </small>
+                                  )}
+                                </span>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </fieldset>
                       <h3 className="studio-sub">Little touches</h3>
                       <label
                         className="studio-check"
@@ -1038,58 +1092,82 @@ export default function Editor() {
                           <small>Warms the middle of the room up.</small>
                         </span>
                       </label>
-                      <div className="studio-stepper">
-                        <span>Pot plants</span>
+                      <fieldset className="studio-fieldset studio-stepper">
+                        <legend>Pot plants</legend>
                         <div>
                           {[0, 1, 2, 3].map((n) => (
-                            <button
-                              type="button"
+                            <label
                               key={n}
                               className={
                                 (profile.room?.plants ?? 1) === n ? 'is-on' : ''
                               }
-                              onClick={() => roomField('plants', n)}
                             >
-                              {n}
-                            </button>
+                              {/*
+                                A real radio group: the browser gives arrow-key
+                                movement, aria-checked and roving focus for
+                                free, which a row of buttons never had.
+                              */}
+                              <input
+                                type="radio"
+                                name="pot-plants"
+                                checked={(profile.room?.plants ?? 1) === n}
+                                onChange={() => roomField('plants', n)}
+                              />
+                              <span aria-hidden="true">{n}</span>
+                              <span className="studio-sr">
+                                {n === 0
+                                  ? 'No pot plants'
+                                  : `${n} pot plant${n === 1 ? '' : 's'}`}
+                              </span>
+                            </label>
                           ))}
                         </div>
-                      </div>
-                      <div className="studio-stepper studio-posters">
-                        <span>Posters · pick up to three</span>
+                      </fieldset>
+                      <fieldset className="studio-fieldset studio-stepper studio-posters">
+                        <legend>Posters</legend>
                         <div>
-                          {(
-                            [
-                              ['#e8749c', 'Pink'],
-                              ['#6f9e77', 'Green'],
-                              ['#5fa0b8', 'Blue'],
-                              ['#e0a05e', 'Amber'],
-                              ['#8d7ce8', 'Violet'],
-                              ['#dc6a5a', 'Red'],
-                            ] as const
-                          ).map(([c, name]) => (
-                            <button
-                              type="button"
-                              key={c}
-                              title={`${name} poster`}
-                              aria-label={`${name} poster`}
-                              aria-pressed={(
-                                profile.room?.posters ?? []
-                              ).includes(c)}
-                              className={
-                                (profile.room?.posters ?? []).includes(c)
-                                  ? 'is-on'
-                                  : ''
-                              }
-                              style={{ background: c }}
-                              onClick={() => togglePoster(c)}
-                            />
-                          ))}
+                          {posterChoices.map(([c, name]) => {
+                            const chosen = profile.room?.posters ?? [];
+                            const on = chosen.includes(c);
+                            const full = !on && chosen.length >= MAX_POSTERS;
+                            return (
+                              <label
+                                key={c}
+                                className={`${on ? 'is-on' : ''}${
+                                  full ? ' is-full' : ''
+                                }`}
+                                title={
+                                  full
+                                    ? `Remove one to add the ${name.toLowerCase()} poster`
+                                    : `${name} poster`
+                                }
+                                style={{ background: c }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={on}
+                                  disabled={full}
+                                  onChange={() => togglePoster(c)}
+                                />
+                                <span className="studio-sr">{name} poster</span>
+                              </label>
+                            );
+                          })}
                         </div>
-                      </div>
+                      </fieldset>
+                      {/*
+                        The only rule in this panel the user cannot see. Read it
+                        back to them, and announce it politely when it changes.
+                      */}
+                      <p className="studio-limit" aria-live="polite">
+                        {(profile.room?.posters ?? []).length} of {MAX_POSTERS}{' '}
+                        posters chosen
+                        {(profile.room?.posters ?? []).length >= MAX_POSTERS &&
+                          ' — remove one to swap'}
+                      </p>
                     </div>
                   </details>
-                  <details className="studio-group">
+                  <details className="studio-group" {...group('You')}>
                     <summary>
                       <span>You</span>
                       <small>Your colours and hair</small>
@@ -1158,7 +1236,7 @@ export default function Editor() {
                       </div>
                     </div>
                   </details>
-                  <details className="studio-group">
+                  <details className="studio-group" {...group('Your pet')}>
                     <summary>
                       <span>Your pet</span>
                       <small>Who keeps you company</small>
@@ -1186,7 +1264,7 @@ export default function Editor() {
                                   rabbit: '🐇',
                                   fox: '🦊',
                                   hamster: '🐹',
-                                  none: '∅',
+                                  none: '🚫',
                                 }[kind]
                               }
                             </span>
