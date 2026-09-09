@@ -38,7 +38,7 @@ Type=simple
 User=attic
 Group=attic
 WorkingDirectory=/opt/attic/app
-Environment=NODE_ENV=production HOST=127.0.0.1 PORT=3000 DATABASE_PATH=/var/lib/attic/attic.sqlite MAX_PROFILES=1000 ENABLE_PUBLISHING=true TRUST_CLOUDFLARE=true
+Environment=NODE_ENV=production HOST=0.0.0.0 PORT=3000 DATABASE_PATH=/var/lib/attic/attic.sqlite MAX_PROFILES=1000 ENABLE_PUBLISHING=true TRUST_CLOUDFLARE=false
 EnvironmentFile=/etc/attic/environment
 ExecStart=/usr/local/bin/node --experimental-strip-types scripts/preview.mjs
 Restart=on-failure
