@@ -119,6 +119,44 @@ function Heart({
   );
 }
 
+function CuteEye({
+  position,
+  size = 0.02,
+}: {
+  position: [number, number, number];
+  size?: number;
+}) {
+  return (
+    <group position={position}>
+      <mesh>
+        <sphereGeometry args={[size, 10, 9]} />
+        <meshBasicMaterial color="#292421" />
+      </mesh>
+      <mesh position={[size * 0.3, size * 0.32, size * 0.82]}>
+        <sphereGeometry args={[size * 0.28, 7, 7]} />
+        <meshBasicMaterial color="#fffdf6" />
+      </mesh>
+    </group>
+  );
+}
+
+function Paw({
+  color,
+  y = -0.13,
+  size = 0.034,
+}: {
+  color: string;
+  y?: number;
+  size?: number;
+}) {
+  return (
+    <mesh position={[0, y, 0.025]} scale={[1.15, 0.5, 1.35]} castShadow>
+      <sphereGeometry args={[size, 10, 8]} />
+      <meshStandardMaterial color={color} roughness={0.98} />
+    </mesh>
+  );
+}
+
 /* ------------------------------------------------------------------- cat */
 
 export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
@@ -221,14 +259,7 @@ export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
             </group>
             <group ref={eyes}>
               {[-0.055, 0.055].map((x) => (
-                <mesh key={x} position={[x, 0.02, 0.115]}>
-                  <sphereGeometry args={[0.019, 8, 8]} />
-                  <meshBasicMaterial color="#2b2622" />
-                  <mesh position={[0.005, 0.006, 0.016]}>
-                    <sphereGeometry args={[0.006, 8, 8]} />
-                    <meshBasicMaterial color="#fff9ed" />
-                  </mesh>
-                </mesh>
+                <CuteEye key={x} position={[x, 0.02, 0.115]} size={0.019} />
               ))}
             </group>
             <mesh position={[0, -0.025, 0.128]}>
@@ -269,6 +300,7 @@ export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
                 <cylinderGeometry args={[0.03, 0.028, 0.13, 7]} />
                 <meshStandardMaterial color={dark} roughness={0.95} />
               </mesh>
+              <Paw color="#f5dfc9" />
             </group>
           ))}
           {/* tail */}
@@ -381,6 +413,18 @@ export function Dog({ motion, loved, onPet, color = '#c98a55' }: PetProps) {
             <sphereGeometry args={[0.1, 12, 10]} />
             <meshStandardMaterial color={cream} roughness={0.95} />
           </mesh>
+          <mesh position={[0, 0.34, 0.13]}>
+            <torusGeometry args={[0.105, 0.012, 6, 20]} />
+            <meshStandardMaterial color="#6e9ccf" roughness={0.7} />
+          </mesh>
+          <mesh position={[0, 0.28, 0.22]} castShadow>
+            <sphereGeometry args={[0.025, 9, 8]} />
+            <meshStandardMaterial
+              color="#e2b85a"
+              metalness={0.25}
+              roughness={0.45}
+            />
+          </mesh>
           {/* head */}
           <group ref={head} position={[0, 0.42, 0.2]}>
             <mesh castShadow>
@@ -399,18 +443,21 @@ export function Dog({ motion, loved, onPet, color = '#c98a55' }: PetProps) {
             {/* floppy ears */}
             <group ref={ears}>
               {[-0.11, 0.11].map((x) => (
-                <mesh key={x} position={[x, 0.03, -0.01]} castShadow>
-                  <capsuleGeometry args={[0.038, 0.12, 4, 8]} />
-                  <meshStandardMaterial color={dark} roughness={0.95} />
-                </mesh>
+                <group key={x} position={[x, 0.03, -0.01]}>
+                  <mesh castShadow>
+                    <capsuleGeometry args={[0.038, 0.12, 4, 8]} />
+                    <meshStandardMaterial color={dark} roughness={0.95} />
+                  </mesh>
+                  <mesh position={[0, 0, 0.029]} scale={[0.55, 0.72, 0.35]}>
+                    <capsuleGeometry args={[0.038, 0.11, 4, 8]} />
+                    <meshStandardMaterial color="#d79b91" roughness={0.95} />
+                  </mesh>
+                </group>
               ))}
             </group>
             <group ref={eyes}>
               {[-0.06, 0.06].map((x) => (
-                <mesh key={x} position={[x, 0.035, 0.108]}>
-                  <sphereGeometry args={[0.021, 8, 8]} />
-                  <meshBasicMaterial color="#2b2622" />
-                </mesh>
+                <CuteEye key={x} position={[x, 0.035, 0.108]} size={0.021} />
               ))}
             </group>
           </group>
@@ -426,6 +473,7 @@ export function Dog({ motion, loved, onPet, color = '#c98a55' }: PetProps) {
                 <cylinderGeometry args={[0.035, 0.032, 0.15, 7]} />
                 <meshStandardMaterial color={dark} roughness={0.95} />
               </mesh>
+              <Paw color={cream} />
             </group>
           ))}
           {/* wagging tail */}
@@ -528,16 +576,23 @@ export function Rabbit({ motion, loved, onPet, color = '#cfc4bb' }: PetProps) {
             </group>
             <group ref={eyes}>
               {[-0.05, 0.05].map((x) => (
-                <mesh key={x} position={[x, 0.01, 0.09]}>
-                  <sphereGeometry args={[0.018, 8, 8]} />
-                  <meshBasicMaterial color="#2b2622" />
-                </mesh>
+                <CuteEye key={x} position={[x, 0.01, 0.09]} size={0.018} />
               ))}
             </group>
             <mesh position={[0, -0.03, 0.105]}>
               <sphereGeometry args={[0.014, 8, 8]} />
               <meshBasicMaterial color={pink} />
             </mesh>
+            {[-0.06, 0.06].map((x) => (
+              <mesh
+                key={x}
+                position={[x, -0.035, 0.092]}
+                scale={[1, 0.7, 0.45]}
+              >
+                <sphereGeometry args={[0.027, 10, 8]} />
+                <meshStandardMaterial color="#f3d8d6" roughness={1} />
+              </mesh>
+            ))}
           </group>
           {/* back feet */}
           {[-0.07, 0.07].map((x) => (
@@ -548,6 +603,17 @@ export function Rabbit({ motion, loved, onPet, color = '#cfc4bb' }: PetProps) {
               castShadow
             >
               <capsuleGeometry args={[0.032, 0.08, 4, 8]} />
+              {fur}
+            </mesh>
+          ))}
+          {[-0.055, 0.055].map((x) => (
+            <mesh
+              key={x}
+              position={[x, 0.055, 0.105]}
+              rotation={[0.25, 0, 0]}
+              castShadow
+            >
+              <capsuleGeometry args={[0.025, 0.07, 4, 8]} />
               {fur}
             </mesh>
           ))}
@@ -655,22 +721,24 @@ export function Fox({ motion, loved, onPet, color = '#d9743a' }: PetProps) {
             </mesh>
             {/* upright triangular ears */}
             {[-0.07, 0.07].map((x) => (
-              <mesh
+              <group
                 key={x}
                 position={[x, 0.1, -0.01]}
                 rotation={[0, 0, x > 0 ? -0.16 : 0.16]}
-                castShadow
               >
-                <coneGeometry args={[0.045, 0.12, 4]} />
-                <meshStandardMaterial color={dark} roughness={0.95} />
-              </mesh>
+                <mesh castShadow>
+                  <coneGeometry args={[0.045, 0.12, 4]} />
+                  <meshStandardMaterial color={dark} roughness={0.95} />
+                </mesh>
+                <mesh position={[0, -0.006, 0.025]} scale={0.62}>
+                  <coneGeometry args={[0.045, 0.1, 4]} />
+                  <meshStandardMaterial color="#e8a58f" roughness={0.95} />
+                </mesh>
+              </group>
             ))}
             <group ref={eyes}>
               {[-0.05, 0.05].map((x) => (
-                <mesh key={x} position={[x, 0.02, 0.095]}>
-                  <sphereGeometry args={[0.018, 8, 8]} />
-                  <meshBasicMaterial color="#2b2622" />
-                </mesh>
+                <CuteEye key={x} position={[x, 0.02, 0.095]} size={0.018} />
               ))}
             </group>
           </group>
@@ -685,6 +753,7 @@ export function Fox({ motion, loved, onPet, color = '#d9743a' }: PetProps) {
                 <cylinderGeometry args={[0.028, 0.026, 0.14, 7]} />
                 <meshStandardMaterial color={dark} roughness={0.95} />
               </mesh>
+              <Paw color={i < 2 ? cream : dark} />
             </group>
           ))}
           {/* brush tail with a white tip */}
@@ -777,22 +846,43 @@ export function Hamster({ motion, loved, onPet, color = '#e0b071' }: PetProps) {
               {fur}
             </mesh>
             {[-0.06, 0.06].map((x) => (
-              <mesh key={x} position={[x, 0.08, -0.01]} castShadow>
-                <sphereGeometry args={[0.04, 10, 8]} />
-                {fur}
-              </mesh>
+              <group key={x} position={[x, 0.08, -0.01]}>
+                <mesh castShadow>
+                  <sphereGeometry args={[0.04, 10, 8]} />
+                  {fur}
+                </mesh>
+                <mesh position={[0, 0, 0.034]}>
+                  <sphereGeometry args={[0.021, 9, 7]} />
+                  <meshStandardMaterial color="#dfa5a4" roughness={1} />
+                </mesh>
+              </group>
             ))}
             <group ref={eyes}>
               {[-0.045, 0.045].map((x) => (
-                <mesh key={x} position={[x, 0.005, 0.085]}>
-                  <sphereGeometry args={[0.017, 8, 8]} />
-                  <meshBasicMaterial color="#2b2622" />
-                </mesh>
+                <CuteEye key={x} position={[x, 0.005, 0.085]} size={0.017} />
               ))}
             </group>
             <mesh position={[0, -0.03, 0.098]}>
               <sphereGeometry args={[0.013, 8, 8]} />
               <meshBasicMaterial color="#d98a95" />
+            </mesh>
+            {[-0.062, 0.062].map((x) => (
+              <mesh
+                key={x}
+                position={[x, -0.025, 0.075]}
+                scale={[1, 0.72, 0.55]}
+              >
+                <sphereGeometry args={[0.035, 10, 8]} />
+                <meshStandardMaterial color="#efb2a9" roughness={1} />
+              </mesh>
+            ))}
+            <mesh position={[-0.014, -0.065, 0.096]}>
+              <boxGeometry args={[0.022, 0.034, 0.009]} />
+              <meshStandardMaterial color="#fff8e9" roughness={0.9} />
+            </mesh>
+            <mesh position={[0.014, -0.065, 0.096]}>
+              <boxGeometry args={[0.022, 0.034, 0.009]} />
+              <meshStandardMaterial color="#fff8e9" roughness={0.9} />
             </mesh>
           </group>
           {[
@@ -806,6 +896,7 @@ export function Hamster({ motion, loved, onPet, color = '#e0b071' }: PetProps) {
                 <capsuleGeometry args={[0.022, 0.04, 4, 6]} />
                 <meshStandardMaterial color={cream} roughness={0.97} />
               </mesh>
+              <Paw color={cream} y={-0.055} size={0.026} />
             </group>
           ))}
         </group>

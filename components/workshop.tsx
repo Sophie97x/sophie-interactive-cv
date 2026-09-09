@@ -14,6 +14,7 @@ import {
   Pause,
   Play,
   Printer,
+  Sparkles,
   Sun,
   X,
   ZoomIn,
@@ -295,9 +296,6 @@ export default function Workshop() {
             <a href="#projects">
               <Code2 size={15} /> All projects
             </a>
-            {/* Full navigation opens the self-hosted editor shell. */}
-            {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-            <a href={sitePath('edit/')}>Make your own ↗</a>
           </nav>
           <button
             className="theme-toggle"
@@ -307,6 +305,14 @@ export default function Workshop() {
           >
             {night ? <Sun size={19} /> : <Moon size={19} />}
           </button>
+          {/* Full navigation opens the self-hosted editor shell. */}
+          {/* oxlint-disable-next-line next/no-html-link-for-pages */}
+          <a className="room-build" href={sitePath('edit/')}>
+            <Sparkles size={15} />
+            <span>
+              Build your own <b>— free</b>
+            </span>
+          </a>
           <a className="room-contact" href="https://github.com/Sophie97x">
             Say hello <ArrowUpRight size={15} />
           </a>
