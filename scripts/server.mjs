@@ -253,12 +253,12 @@ export function createApp({
       let file;
       if (pathname === '/') file = resolve(root, 'index.html');
       else if (pathname === '/edit' || pathname === '/edit/')
-        file = resolve(root, 'edit.html');
+        file = resolve(root, 'edit/index.html');
       else if (pathname === '/view' || /^\/[a-z0-9-]+\/?$/.test(pathname)) {
         const slug = pathname.replace(/^\/|\/$/g, '');
         if (pathname !== '/view' && (!validSlug(slug) || !get.get(slug)))
           throw fail(404, 'Page not found.');
-        file = resolve(root, 'view.html');
+        file = resolve(root, 'view/index.html');
       } else file = resolve(root, `.${pathname}`);
       if (
         !file.startsWith(root + sep) ||

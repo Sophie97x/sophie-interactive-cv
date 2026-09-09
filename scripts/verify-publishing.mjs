@@ -18,11 +18,15 @@ const profile = () =>
 async function fixture() {
   const dir = await mkdtemp(join(tmpdir(), 'cv-publishing-'));
   const staticRoot = join(dir, 'static');
-  await mkdir(staticRoot);
+  await Promise.all([
+    mkdir(staticRoot, { recursive: true }),
+    mkdir(join(staticRoot, 'edit'), { recursive: true }),
+    mkdir(join(staticRoot, 'view'), { recursive: true }),
+  ]);
   await Promise.all([
     writeFile(join(staticRoot, 'index.html'), 'home'),
-    writeFile(join(staticRoot, 'edit.html'), 'edit'),
-    writeFile(join(staticRoot, 'view.html'), 'view'),
+    writeFile(join(staticRoot, 'edit/index.html'), 'edit'),
+    writeFile(join(staticRoot, 'view/index.html'), 'view'),
     writeFile(join(staticRoot, 'worker.mjs'), 'export default null;'),
   ]);
   return { dir, staticRoot, dbPath: join(dir, 'portfolios.sqlite') };
