@@ -23,6 +23,7 @@ async function fixture() {
     writeFile(join(staticRoot, 'index.html'), 'home'),
     writeFile(join(staticRoot, 'edit.html'), 'edit'),
     writeFile(join(staticRoot, 'view.html'), 'view'),
+    writeFile(join(staticRoot, 'worker.mjs'), 'export default null;'),
   ]);
   return { dir, staticRoot, dbPath: join(dir, 'portfolios.sqlite') };
 }
@@ -298,6 +299,9 @@ test('publishing API and static routes', async (t) => {
 
     assert.equal((await request(base, '/edit')).body, 'edit');
     assert.equal((await request(base, '/test-site')).body, 'view');
+    result = await request(base, '/worker.mjs');
+    assert.equal(result.response.headers.get('content-type'), 'text/javascript');
+    assert.equal(result.body, 'export default null;');
   });
 });
 
