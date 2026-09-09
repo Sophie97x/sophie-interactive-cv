@@ -9,6 +9,7 @@ import {
   Pause,
   Play,
   Printer,
+  Sparkles,
   Sun,
 } from 'lucide-react';
 import World, { type PlaceId } from './room/world';
@@ -67,13 +68,22 @@ export default function PersonalPortfolio({
     if (!staticHosting || preview) return;
     // Keep the CV snapshot in the URL while moving between sections.
     event.preventDefault();
-    document.getElementById(id)?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant' });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant' });
   }
   return (
     <article
       className={`personal-page ${preview ? 'is-preview' : ''}`}
       style={{ '--profile-accent': profile.appearance.accent } as CSSProperties}
     >
+      {!preview && (
+        <div className="personal-maker-bar">
+          <a className="personal-maker-link" href={sitePath('edit/')}>
+            <Sparkles size={15} /> Make your own room for free
+          </a>
+        </div>
+      )}
       <header className="personal-intro">
         <span className="studio-eyebrow">A little room. My whole story.</span>
         <h1>
@@ -191,13 +201,24 @@ export default function PersonalPortfolio({
       </p>
       {focus && (
         <div className="personal-focus">
-          <a href={`#${selectedSection}`} onClick={e => jump(e, selectedSection)}>Explore my {selectedSection} ↓</a>
+          <a
+            href={`#${selectedSection}`}
+            onClick={(e) => jump(e, selectedSection)}
+          >
+            Explore my {selectedSection} ↓
+          </a>
         </div>
       )}
       <nav className="personal-section-nav" aria-label="CV sections">
-        <a href="#about" onClick={e => jump(e, 'about')}>About</a>
-        <a href="#experience" onClick={e => jump(e, 'experience')}>Experience</a>
-        <a href="#projects" onClick={e => jump(e, 'projects')}>Projects</a>
+        <a href="#about" onClick={(e) => jump(e, 'about')}>
+          About
+        </a>
+        <a href="#experience" onClick={(e) => jump(e, 'experience')}>
+          Experience
+        </a>
+        <a href="#projects" onClick={(e) => jump(e, 'projects')}>
+          Projects
+        </a>
       </nav>
       <div className="personal-content">
         <section id="about">
@@ -260,7 +281,9 @@ export default function PersonalPortfolio({
       </div>
       {!preview && (
         <footer className="personal-footer">
-          <a href={sitePath('edit/')}>Make your own little room ↗</a>
+          <a className="personal-footer-maker" href={sitePath('edit/')}>
+            Make your own room for free ↗
+          </a>
           <button onClick={() => window.print()}>Print / save as PDF</button>
         </footer>
       )}

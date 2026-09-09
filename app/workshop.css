@@ -831,16 +831,18 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
-  border: 1px solid #b6e061;
+  padding: 9px 17px;
+  border: 1px solid #acd657;
   border-radius: 999px;
-  background: #c9f27a;
+  background: linear-gradient(135deg, #d7ff8c, #bfea68);
   color: #2b2434;
   font-size: 0.82rem;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: 0 5px 16px rgba(88, 112, 43, 0.16);
+  box-shadow:
+    0 7px 20px rgba(88, 112, 43, 0.2),
+    inset 0 1px rgba(255, 255, 255, 0.7);
   transition:
     filter 0.15s,
     transform 0.15s,
@@ -863,7 +865,7 @@
 }
 @media (max-width: 52rem) {
   .room-build {
-    padding: 6px 11px;
+    padding: 7px 11px;
     font-size: 0.78rem;
   }
 }
@@ -872,7 +874,7 @@
     display: none;
   }
   .room-build {
-    padding: 6px 9px;
+    padding: 7px 10px;
     font-size: 0.72rem;
   }
 }

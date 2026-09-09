@@ -7,8 +7,9 @@
   color-scheme: light;
   color: #292737;
   background: #faf9f6;
-  font-family: Arial, Helvetica, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Noto Color Emoji';
+  font-family:
+    Arial, Helvetica, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Noto Color Emoji';
   font-size: 15px;
   line-height: 1.6;
 }
@@ -466,9 +467,37 @@
 .personal-page {
   min-height: 100vh;
 }
+.personal-maker-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 24px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.personal-maker-link,
+.personal-footer-maker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--profile-accent) 45%, #ded5e7);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--profile-accent) 13%, #fffdf9);
+  color: #51405e;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 10px 15px;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(74, 53, 88, 0.09);
+}
+.personal-maker-link:hover,
+.personal-footer-maker:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(74, 53, 88, 0.14);
+}
 .personal-intro {
   text-align: center;
-  padding: 62px 24px 12px;
+  padding: 34px 24px 12px;
 }
 .personal-intro h1 {
   font-weight: 750;
@@ -653,6 +682,9 @@
   padding: 0;
   background: none;
 }
+.personal-footer-maker {
+  font-size: 12px;
+}
 .is-preview .personal-intro {
   padding-top: 40px;
 }
@@ -737,6 +769,13 @@
   .personal-intro {
     padding-top: 40px;
   }
+  .personal-maker-bar {
+    padding: 14px 16px 0;
+  }
+  .personal-maker-link {
+    padding: 9px 13px;
+    font-size: 11px;
+  }
   .personal-room {
     min-height: 320px;
   }
@@ -757,6 +796,7 @@
   .personal-room,
   .personal-room-hint,
   .personal-section-nav,
+  .personal-maker-bar,
   .personal-footer,
   .studio {
     display: none !important;
@@ -815,7 +855,9 @@
   text-align: center;
   cursor: pointer;
   background: #fff;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 .studio-import-drop:hover {
   border-color: var(--studio-ink, #7059ce);
@@ -878,7 +920,10 @@
   padding: 8px 14px;
   font-size: 0.86rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    color 0.15s;
 }
 .studio-choice button:hover {
   border-color: #b3a9cf;
@@ -973,7 +1018,9 @@
   font-size: 0.85rem;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 .studio-theme:hover {
   border-color: var(--studio-ink, #7059ce);
@@ -1022,7 +1069,9 @@
   border-radius: 8px;
   font-size: 0.85rem;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
 }
 .studio-stepper label:hover {
   border-color: #b3a9cf;
@@ -1304,7 +1353,6 @@
 .studio-welcome.is-compact p {
   display: none;
 }
-
 
 /* --------------------------------------------- fieldsets and sr-only text */
 /*

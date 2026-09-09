@@ -310,7 +310,7 @@ export default function Workshop() {
           <a className="room-build" href={sitePath('edit/')}>
             <Sparkles size={15} />
             <span>
-              Build your own <b>— free</b>
+              Make your own room <b>for free</b>
             </span>
           </a>
           <a className="room-contact" href="https://github.com/Sophie97x">

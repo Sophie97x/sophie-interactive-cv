@@ -169,6 +169,17 @@ export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
   const legRefs = useLegRefs();
   const elapsed = useRef(0);
   const heartAt = useMemo(() => new THREE.Vector3(), []);
+  const tailCurve = useMemo(
+    () =>
+      new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0.04, -0.09),
+        new THREE.Vector3(0.015, 0.13, -0.17),
+        new THREE.Vector3(0.055, 0.23, -0.16),
+        new THREE.Vector3(0.11, 0.3, -0.08),
+      ]),
+    [],
+  );
 
   useFrame((_, dt) => {
     if (motion && !loved) elapsed.current += Math.min(dt, 0.05);
@@ -194,10 +205,12 @@ export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
       body.current.scale.y = 1 - p.crouch * 0.16;
     }
     swingLegs(legRefs, p, loved);
-    if (tail.current)
+    if (tail.current) {
       tail.current.rotation.y =
         Math.sin(t * (loved ? 4 : p.seated ? 1.1 : 2.4)) *
         (p.seated ? 0.28 : 0.5);
+      tail.current.rotation.z = Math.sin(t * 0.85) * 0.08;
+    }
     if (ears.current)
       ears.current.rotation.x = loved ? -0.2 : Math.sin(t * 0.7) * 0.08;
     if (eyes.current) eyes.current.scale.y = loved || t % 5.2 > 5.05 ? 0.15 : 1;
@@ -304,13 +317,13 @@ export function Cat({ motion, loved, onPet, color = '#c9873f' }: PetProps) {
             </group>
           ))}
           {/* tail */}
-          <group ref={tail} position={[0, 0.27, -0.19]}>
-            <mesh
-              position={[0, 0.06, -0.09]}
-              rotation={[0.85, 0, 0]}
-              castShadow
-            >
-              <capsuleGeometry args={[0.028, 0.24, 4, 8]} />
+          <group ref={tail} position={[0, 0.25, -0.15]}>
+            <mesh castShadow>
+              <tubeGeometry args={[tailCurve, 20, 0.028, 8, false]} />
+              {fur}
+            </mesh>
+            <mesh position={[0.11, 0.3, -0.08]} castShadow>
+              <sphereGeometry args={[0.029, 9, 8]} />
               {fur}
             </mesh>
           </group>
@@ -334,6 +347,16 @@ export function Dog({ motion, loved, onPet, color = '#c98a55' }: PetProps) {
   const legRefs = useLegRefs();
   const elapsed = useRef(0);
   const heartAt = useMemo(() => new THREE.Vector3(), []);
+  const tailCurve = useMemo(
+    () =>
+      new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(0, 0.06, -0.07),
+        new THREE.Vector3(0.01, 0.14, -0.13),
+        new THREE.Vector3(0.025, 0.22, -0.12),
+      ]),
+    [],
+  );
 
   useFrame((_, dt) => {
     if (motion && !loved) elapsed.current += Math.min(dt, 0.05);
@@ -477,9 +500,13 @@ export function Dog({ motion, loved, onPet, color = '#c98a55' }: PetProps) {
             </group>
           ))}
           {/* wagging tail */}
-          <group ref={tail} position={[0, 0.32, -0.2]}>
-            <mesh position={[0, 0.07, -0.05]} rotation={[0.5, 0, 0]} castShadow>
-              <capsuleGeometry args={[0.03, 0.16, 4, 8]} />
+          <group ref={tail} position={[0, 0.3, -0.18]}>
+            <mesh castShadow>
+              <tubeGeometry args={[tailCurve, 16, 0.034, 8, false]} />
+              {fur}
+            </mesh>
+            <mesh position={[0.025, 0.22, -0.12]} castShadow>
+              <sphereGeometry args={[0.035, 9, 8]} />
               {fur}
             </mesh>
           </group>

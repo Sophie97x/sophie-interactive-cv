@@ -1,11 +1,13 @@
 'use client';
 // Room objects adapted from Sophie's local cv3d version; original preserved.
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useMemo, useRef } from 'react';
 import { useFrame as fiberFrame } from '@react-three/fiber';
 export const MotionContext = createContext(true);
 function useFrame(callback: Parameters<typeof fiberFrame>[0]) {
   const moving = useContext(MotionContext);
-  fiberFrame((state, delta) => { if (moving) callback(state, delta); });
+  fiberFrame((state, delta) => {
+    if (moving) callback(state, delta);
+  });
 }
 import * as THREE from 'three';
 import { fingerPress } from './desk-motion';
@@ -95,15 +97,36 @@ export function Desk({ position, rotation, scale = 1 }: P) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Box args={[3.4, 0.14, 1.7]} color={C.wood} position={[0, 0.72, 0]} />
-      <Box args={[0.16, 0.72, 0.16]} color={C.woodDark} position={[-1.5, 0.36, -0.68]} />
-      <Box args={[0.16, 0.72, 0.16]} color={C.woodDark} position={[1.5, 0.36, -0.68]} />
-      <Box args={[0.16, 0.72, 0.16]} color={C.woodDark} position={[-1.5, 0.36, 0.68]} />
-      <Box args={[0.16, 0.72, 0.16]} color={C.woodDark} position={[1.5, 0.36, 0.68]} />
+      <Box
+        args={[0.16, 0.72, 0.16]}
+        color={C.woodDark}
+        position={[-1.5, 0.36, -0.68]}
+      />
+      <Box
+        args={[0.16, 0.72, 0.16]}
+        color={C.woodDark}
+        position={[1.5, 0.36, -0.68]}
+      />
+      <Box
+        args={[0.16, 0.72, 0.16]}
+        color={C.woodDark}
+        position={[-1.5, 0.36, 0.68]}
+      />
+      <Box
+        args={[0.16, 0.72, 0.16]}
+        color={C.woodDark}
+        position={[1.5, 0.36, 0.68]}
+      />
     </group>
   );
 }
 
-export function Monitor({ position, rotation, scale = 1, warm = false }: P & { warm?: boolean }) {
+export function Monitor({
+  position,
+  rotation,
+  scale = 1,
+  warm = false,
+}: P & { warm?: boolean }) {
   const glow = warm ? C.screenWarm : C.screen;
   return (
     <group position={position} rotation={rotation} scale={scale}>
@@ -132,14 +155,21 @@ const KEYBOARD_ROWS = [
   { offset: 0, widths: [1.2, 1.2, 1.2, 5.2, 1.2, 1.2, 1] },
 ] as const;
 
-export function Keyboard({ position, rotation, scale = 1, typing = false }: P & { typing?: boolean }) {
+export function Keyboard({
+  position,
+  rotation,
+  scale = 1,
+  typing = false,
+}: P & { typing?: boolean }) {
   const rows = useRef<THREE.Group>(null);
   const elapsed = useRef(0);
   useFrame((_, dt) => {
     if (!typing) return;
     elapsed.current += Math.min(dt, 0.05);
     rows.current?.children[2]?.children.forEach((key, i) => {
-      key.position.y = [2, 3, 4, 7, 8, 9].includes(i) ? -0.006 * fingerPress(elapsed.current, i < 5 ? 1 : -1, i % 4) : 0;
+      key.position.y = [2, 3, 4, 7, 8, 9].includes(i)
+        ? -0.006 * fingerPress(elapsed.current, i < 5 ? 1 : -1, i % 4)
+        : 0;
     });
   });
   const unit = 0.058;
@@ -152,34 +182,41 @@ export function Keyboard({ position, rotation, scale = 1, typing = false }: P & 
         color={C.metalLight}
         position={[0, 0.036, 0]}
       />
-      <group ref={rows}>{KEYBOARD_ROWS.map((row, rowIndex) => {
-        const rowWidth =
-          row.widths.reduce((sum, width) => sum + width, 0) * unit +
-          (row.widths.length - 1) * gap;
-        let cursor = -rowWidth / 2 + row.offset;
-        return (
-          <group key={rowIndex} position={[0, 0.069, -0.116 + rowIndex * 0.058]}>
-            {row.widths.map((width, keyIndex) => {
-              const keyWidth = width * unit;
-              const x = cursor + keyWidth / 2;
-              cursor += keyWidth + gap;
-              return (
-                <group key={keyIndex}><Box
-                  args={[keyWidth, 0.034, 0.044]}
-                  color={
-                    width > 4
-                      ? C.teal
-                      : keyIndex === 0 || keyIndex === row.widths.length - 1
-                        ? '#c8d0cf'
-                        : '#eee8dc'
-                  }
-                  position={[x, 0, 0]}
-                /></group>
-              );
-            })}
-          </group>
-        );
-      })}</group>
+      <group ref={rows}>
+        {KEYBOARD_ROWS.map((row, rowIndex) => {
+          const rowWidth =
+            row.widths.reduce((sum, width) => sum + width, 0) * unit +
+            (row.widths.length - 1) * gap;
+          let cursor = -rowWidth / 2 + row.offset;
+          return (
+            <group
+              key={rowIndex}
+              position={[0, 0.069, -0.116 + rowIndex * 0.058]}
+            >
+              {row.widths.map((width, keyIndex) => {
+                const keyWidth = width * unit;
+                const x = cursor + keyWidth / 2;
+                cursor += keyWidth + gap;
+                return (
+                  <group key={keyIndex}>
+                    <Box
+                      args={[keyWidth, 0.034, 0.044]}
+                      color={
+                        width > 4
+                          ? C.teal
+                          : keyIndex === 0 || keyIndex === row.widths.length - 1
+                            ? '#c8d0cf'
+                            : '#eee8dc'
+                      }
+                      position={[x, 0, 0]}
+                    />
+                  </group>
+                );
+              })}
+            </group>
+          );
+        })}
+      </group>
     </group>
   );
 }
@@ -193,7 +230,11 @@ export function Mouse({ position, scale = 1 }: P) {
   );
 }
 
-export function Mug({ position, scale = 1, color = C.coral }: P & { color?: string }) {
+export function Mug({
+  position,
+  scale = 1,
+  color = C.coral,
+}: P & { color?: string }) {
   return (
     <group position={position} scale={scale}>
       <Cyl args={[0.11, 0.09, 0.2, 12]} color={color} position={[0, 0.1, 0]} />
@@ -212,14 +253,23 @@ export function Mug({ position, scale = 1, color = C.coral }: P & { color?: stri
 export function Plant({ position, scale = 1 }: P) {
   return (
     <group position={position} scale={scale}>
-      <Cyl args={[0.16, 0.12, 0.24, 10]} color={C.coral} position={[0, 0.12, 0]} />
+      <Cyl
+        args={[0.16, 0.12, 0.24, 10]}
+        color={C.coral}
+        position={[0, 0.12, 0]}
+      />
       {[
         [0, 0.42, 0, 0],
         [0.1, 0.36, 0.06, 0.5],
         [-0.09, 0.38, -0.05, -0.6],
         [0.03, 0.34, -0.11, 0.9],
       ].map(([x, y, z, tilt], i) => (
-        <mesh key={i} position={[x, y, z]} rotation={[tilt, i, tilt * 0.5]} castShadow>
+        <mesh
+          key={i}
+          position={[x, y, z]}
+          rotation={[tilt, i, tilt * 0.5]}
+          castShadow
+        >
           <sphereGeometry args={[0.14, 8, 6]} />
           <meshStandardMaterial color={C.green} roughness={0.85} />
         </mesh>
@@ -278,43 +328,77 @@ export function Headset({ position, rotation, scale = 1 }: P) {
 
 /* ---------------------------------------------------------------- IT gear */
 
-export function Tower({ position, rotation, scale = 1, open = false }: P & { open?: boolean }) {
+export function Tower({
+  position,
+  rotation,
+  scale = 1,
+  open = false,
+}: P & { open?: boolean }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Box args={[0.5, 0.95, 0.85]} color={C.dark} position={[0, 0.475, 0]} />
       {open ? (
         <>
-          <Box args={[0.02, 0.9, 0.8]} color={C.metal} position={[0.3, 0.5, 0.28]} rotation={[0, 0.55, 0]} />
+          <Box
+            args={[0.02, 0.9, 0.8]}
+            color={C.metal}
+            position={[0.3, 0.5, 0.28]}
+            rotation={[0, 0.55, 0]}
+          />
           <Box args={[0.3, 0.02, 0.5]} color={C.green} position={[0, 0.4, 0]} />
-          <Box args={[0.12, 0.12, 0.14]} color={C.metalLight} position={[0.08, 0.52, 0.1]} />
+          <Box
+            args={[0.12, 0.12, 0.14]}
+            color={C.metalLight}
+            position={[0.08, 0.52, 0.1]}
+          />
         </>
       ) : null}
       <mesh position={[0, 0.62, 0.43]}>
         <circleGeometry args={[0.17, 12]} />
-        <meshStandardMaterial color={C.teal} emissive={C.teal} emissiveIntensity={1.4} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.teal}
+          emissive={C.teal}
+          emissiveIntensity={1.4}
+          toneMapped={false}
+        />
       </mesh>
       <mesh position={[0, 0.2, 0.43]}>
         <circleGeometry args={[0.05, 8]} />
-        <meshStandardMaterial color={C.coral} emissive={C.coral} emissiveIntensity={1.6} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.coral}
+          emissive={C.coral}
+          emissiveIntensity={1.6}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
 }
 
 /** Server rack with blinking LEDs — the homelab in miniature. */
-export function ServerRack({ position, rotation, scale = 1, units = 5 }: P & { units?: number }) {
+export function ServerRack({
+  position,
+  rotation,
+  scale = 1,
+  units = 5,
+}: P & { units?: number }) {
   const leds = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     if (!leds.current) return;
     const t = clock.elapsedTime;
     leds.current.children.forEach((c, i) => {
       const m = (c as THREE.Mesh).material as THREE.MeshStandardMaterial;
-      m.emissiveIntensity = 0.5 + Math.abs(Math.sin(t * (1.1 + i * 0.37) + i)) * 1.9;
+      m.emissiveIntensity =
+        0.5 + Math.abs(Math.sin(t * (1.1 + i * 0.37) + i)) * 1.9;
     });
   });
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      <Box args={[0.9, units * 0.24 + 0.16, 0.75]} color={C.metal} position={[0, (units * 0.24) / 2 + 0.08, 0]} />
+      <Box
+        args={[0.9, units * 0.24 + 0.16, 0.75]}
+        color={C.metal}
+        position={[0, (units * 0.24) / 2 + 0.08, 0]}
+      />
       {Array.from({ length: units }).map((_, i) => (
         <Box
           key={i}
@@ -352,27 +436,52 @@ export function AccessPoint({ position, scale = 1 }: P) {
   });
   return (
     <group position={position} scale={scale}>
-      <Cyl args={[0.04, 0.05, 1.4, 8]} color={C.metalLight} position={[0, 0.7, 0]} />
+      <Cyl
+        args={[0.04, 0.05, 1.4, 8]}
+        color={C.metalLight}
+        position={[0, 0.7, 0]}
+      />
       <Cyl args={[0.3, 0.3, 0.1, 14]} color={C.cream} position={[0, 1.44, 0]} />
       <mesh position={[0, 1.38, 0]}>
         <circleGeometry args={[0.09, 10]} />
-        <meshStandardMaterial color={C.teal} emissive={C.teal} emissiveIntensity={1.6} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.teal}
+          emissive={C.teal}
+          emissiveIntensity={1.6}
+          toneMapped={false}
+        />
       </mesh>
       <mesh ref={ring} position={[0, 1.5, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.34, 0.4, 20]} />
-        <meshBasicMaterial color={C.teal} transparent opacity={0.4} side={THREE.DoubleSide} toneMapped={false} />
+        <meshBasicMaterial
+          color={C.teal}
+          transparent
+          opacity={0.4}
+          side={THREE.DoubleSide}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
 }
 
-export function Phone({ position, rotation, scale = 1, color = C.dark }: P & { color?: string }) {
+export function Phone({
+  position,
+  rotation,
+  scale = 1,
+  color = C.dark,
+}: P & { color?: string }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Box args={[0.17, 0.02, 0.33]} color={color} />
       <mesh position={[0, 0.012, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[0.14, 0.28]} />
-        <meshStandardMaterial color={C.screen} emissive={C.screen} emissiveIntensity={0.9} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.screen}
+          emissive={C.screen}
+          emissiveIntensity={0.9}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
@@ -387,7 +496,11 @@ export function SimTray({ position, rotation, scale = 1 }: P) {
           key={i}
           args={[0.13, 0.02, 0.1]}
           color={C.yellow}
-          position={[-0.2 + (i % 3) * 0.2, 0.03, -0.09 + Math.floor(i / 3) * 0.18]}
+          position={[
+            -0.2 + (i % 3) * 0.2,
+            0.03,
+            -0.09 + Math.floor(i / 3) * 0.18,
+          ]}
         />
       ))}
     </group>
@@ -395,21 +508,36 @@ export function SimTray({ position, rotation, scale = 1 }: P) {
 }
 
 /** Meshtastic-style LoRa node with a whip antenna. */
-export function MeshNode({ position, scale = 1, blinkOffset = 0 }: P & { blinkOffset?: number }) {
+export function MeshNode({
+  position,
+  scale = 1,
+  blinkOffset = 0,
+}: P & { blinkOffset?: number }) {
   const led = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
     if (!led.current) return;
     const m = led.current.material as THREE.MeshStandardMaterial;
     m.emissiveIntensity =
-      0.3 + Math.pow(Math.abs(Math.sin(clock.elapsedTime * 1.6 + blinkOffset)), 6) * 3;
+      0.3 +
+      Math.pow(Math.abs(Math.sin(clock.elapsedTime * 1.6 + blinkOffset)), 6) *
+        3;
   });
   return (
     <group position={position} scale={scale}>
       <Box args={[0.24, 0.1, 0.16]} color={C.dark} position={[0, 0.05, 0]} />
-      <Cyl args={[0.012, 0.012, 0.44, 6]} color={C.metalLight} position={[0.09, 0.27, 0]} />
+      <Cyl
+        args={[0.012, 0.012, 0.44, 6]}
+        color={C.metalLight}
+        position={[0.09, 0.27, 0]}
+      />
       <mesh ref={led} position={[-0.06, 0.06, 0.081]}>
         <boxGeometry args={[0.03, 0.03, 0.01]} />
-        <meshStandardMaterial color={C.green} emissive={C.green} emissiveIntensity={1} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.green}
+          emissive={C.green}
+          emissiveIntensity={1}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
@@ -417,7 +545,12 @@ export function MeshNode({ position, scale = 1, blinkOffset = 0 }: P & { blinkOf
 
 /* ---------------------------------------------------------------- era props */
 
-export function Pallet({ position, rotation, scale = 1, boxes = 3 }: P & { boxes?: number }) {
+export function Pallet({
+  position,
+  rotation,
+  scale = 1,
+  boxes = 3,
+}: P & { boxes?: number }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Box args={[1.2, 0.1, 0.9]} color={C.woodDark} position={[0, 0.05, 0]} />
@@ -426,7 +559,11 @@ export function Pallet({ position, rotation, scale = 1, boxes = 3 }: P & { boxes
           key={i}
           args={[0.52, 0.42, 0.52]}
           color={i % 2 ? C.card : C.cream}
-          position={[-0.26 + (i % 2) * 0.52, 0.31 + Math.floor(i / 2) * 0.42, 0]}
+          position={[
+            -0.26 + (i % 2) * 0.52,
+            0.31 + Math.floor(i / 2) * 0.42,
+            0,
+          ]}
           rotation={[0, i * 0.12, 0]}
         />
       ))}
@@ -438,17 +575,36 @@ export function Scanner({ position, rotation, scale = 1 }: P) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       <Box args={[1.5, 0.5, 0.95]} color={C.cream} position={[0, 0.25, 0]} />
-      <Box args={[1.3, 0.08, 0.8]} color={C.metalLight} position={[0, 0.54, 0]} />
-      <Box args={[1.1, 0.3, 0.06]} color={C.card} position={[0, 0.7, -0.36]} rotation={[-0.35, 0, 0]} />
+      <Box
+        args={[1.3, 0.08, 0.8]}
+        color={C.metalLight}
+        position={[0, 0.54, 0]}
+      />
+      <Box
+        args={[1.1, 0.3, 0.06]}
+        color={C.card}
+        position={[0, 0.7, -0.36]}
+        rotation={[-0.35, 0, 0]}
+      />
       <mesh position={[0, 0.55, 0.2]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[1.15, 0.1]} />
-        <meshStandardMaterial color={C.teal} emissive={C.teal} emissiveIntensity={1.8} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.teal}
+          emissive={C.teal}
+          emissiveIntensity={1.8}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
 }
 
-export function PaperStack({ position, rotation, scale = 1, sheets = 5 }: P & { sheets?: number }) {
+export function PaperStack({
+  position,
+  rotation,
+  scale = 1,
+  sheets = 5,
+}: P & { sheets?: number }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {Array.from({ length: sheets }).map((_, i) => (
@@ -456,7 +612,11 @@ export function PaperStack({ position, rotation, scale = 1, sheets = 5 }: P & { 
           key={i}
           args={[0.44, 0.035, 0.6]}
           color={C.cream}
-          position={[Math.sin(i * 2.1) * 0.025, 0.02 + i * 0.038, Math.cos(i * 1.7) * 0.025]}
+          position={[
+            Math.sin(i * 2.1) * 0.025,
+            0.02 + i * 0.038,
+            Math.cos(i * 1.7) * 0.025,
+          ]}
           rotation={[0, i * 0.06, 0]}
         />
       ))}
@@ -471,7 +631,11 @@ export function ToolBoard({ position, rotation, scale = 1 }: P) {
       {[C.coral, C.teal, C.yellow, C.blue].map((c, i) => (
         <group key={i} position={[-0.45 + i * 0.3, 0.12, 0.06]}>
           <Cyl args={[0.022, 0.022, 0.36, 6]} color={C.metalLight} />
-          <Cyl args={[0.045, 0.045, 0.16, 8]} color={c} position={[0, -0.24, 0]} />
+          <Cyl
+            args={[0.045, 0.045, 0.16, 8]}
+            color={c}
+            position={[0, -0.24, 0]}
+          />
         </group>
       ))}
     </group>
@@ -484,6 +648,17 @@ export function ToolBoard({ position, rotation, scale = 1 }: P) {
 export function Cat({ position, rotation, scale = 1 }: P) {
   const tail = useRef<THREE.Group>(null);
   const motion = useContext(MotionContext);
+  const tailCurve = useMemo(
+    () =>
+      new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(-0.08, 0.02, 0),
+        new THREE.Vector3(-0.16, 0.08, -0.01),
+        new THREE.Vector3(-0.18, 0.17, 0.02),
+        new THREE.Vector3(-0.1, 0.22, 0.045),
+      ]),
+    [],
+  );
   useFrame(({ clock }) => {
     if (motion && tail.current)
       tail.current.rotation.y = Math.sin(clock.elapsedTime * 0.9) * 0.3;
@@ -506,9 +681,9 @@ export function Cat({ position, rotation, scale = 1 }: P) {
         <coneGeometry args={[0.045, 0.09, 4]} />
         <meshStandardMaterial color={C.cat} roughness={0.95} />
       </mesh>
-      <group ref={tail} position={[-0.18, -0.04, 0]}>
-        <mesh position={[-0.1, 0.03, 0]} rotation={[0, 0, 0.5]} castShadow>
-          <capsuleGeometry args={[0.035, 0.22, 4, 8]} />
+      <group ref={tail} position={[-0.16, -0.03, 0]}>
+        <mesh castShadow>
+          <tubeGeometry args={[tailCurve, 18, 0.035, 8, false]} />
           <meshStandardMaterial color={C.cat} roughness={0.95} />
         </mesh>
       </group>
@@ -563,7 +738,9 @@ export function Pokeball({ position, scale = 1 }: P) {
         <meshStandardMaterial color={C.red} roughness={0.4} />
       </mesh>
       <mesh castShadow>
-        <sphereGeometry args={[0.15, 14, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
+        <sphereGeometry
+          args={[0.15, 14, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]}
+        />
         <meshStandardMaterial color={C.cream} roughness={0.4} />
       </mesh>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
@@ -584,7 +761,11 @@ export function Brownies({ position, rotation, scale = 1 }: P) {
           key={i}
           args={[0.19, 0.08, 0.15]}
           color="#5c3a24"
-          position={[-0.11 + (i % 2) * 0.22, 0.065, -0.08 + Math.floor(i / 2) * 0.16]}
+          position={[
+            -0.11 + (i % 2) * 0.22,
+            0.065,
+            -0.08 + Math.floor(i / 2) * 0.16,
+          ]}
         />
       ))}
     </group>
@@ -630,13 +811,26 @@ export function Duck({ position, scale = 1 }: P) {
   );
 }
 
-export function Sign({ position, rotation, scale = 1, color = C.teal }: P & { color?: string }) {
+export function Sign({
+  position,
+  rotation,
+  scale = 1,
+  color = C.teal,
+}: P & { color?: string }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
-      <Cyl args={[0.04, 0.04, 0.9, 6]} color={C.woodDark} position={[0, 0.45, 0]} />
+      <Cyl
+        args={[0.04, 0.04, 0.9, 6]}
+        color={C.woodDark}
+        position={[0, 0.45, 0]}
+      />
       <Box args={[0.9, 0.34, 0.06]} color={C.cream} position={[0, 0.98, 0]} />
       <Box args={[0.78, 0.06, 0.02]} color={color} position={[0, 1.02, 0.04]} />
-      <Box args={[0.5, 0.05, 0.02]} color={C.metalLight} position={[-0.14, 0.9, 0.04]} />
+      <Box
+        args={[0.5, 0.05, 0.02]}
+        color={C.metalLight}
+        position={[-0.14, 0.9, 0.04]}
+      />
     </group>
   );
 }
@@ -661,36 +855,95 @@ export function Printer3D({ position, rotation, scale = 1 }: P) {
       {/* base */}
       <Box args={[0.95, 0.14, 0.85]} color={C.dark} position={[0, 0.07, 0]} />
       {/* uprights + top rail */}
-      <Box args={[0.07, 1.15, 0.07]} color={frame} position={[-0.42, 0.72, -0.32]} />
-      <Box args={[0.07, 1.15, 0.07]} color={frame} position={[0.42, 0.72, -0.32]} />
-      <Box args={[0.95, 0.07, 0.07]} color={frame} position={[0, 1.29, -0.32]} />
+      <Box
+        args={[0.07, 1.15, 0.07]}
+        color={frame}
+        position={[-0.42, 0.72, -0.32]}
+      />
+      <Box
+        args={[0.07, 1.15, 0.07]}
+        color={frame}
+        position={[0.42, 0.72, -0.32]}
+      />
+      <Box
+        args={[0.95, 0.07, 0.07]}
+        color={frame}
+        position={[0, 1.29, -0.32]}
+      />
       {/* moving bed */}
       <group ref={bed}>
-        <Box args={[0.72, 0.05, 0.6]} color={C.metal} position={[0, 0.2, 0.05]} />
-        <Box args={[0.66, 0.02, 0.54]} color="#3f6f6f" position={[0, 0.235, 0.05]} />
+        <Box
+          args={[0.72, 0.05, 0.6]}
+          color={C.metal}
+          position={[0, 0.2, 0.05]}
+        />
+        <Box
+          args={[0.66, 0.02, 0.54]}
+          color="#3f6f6f"
+          position={[0, 0.235, 0.05]}
+        />
         {/* the print in progress */}
-        <Box args={[0.16, 0.19, 0.16]} color={C.coral} position={[0.04, 0.34, 0.03]} />
-        <Box args={[0.2, 0.03, 0.2]} color={C.coral} position={[0.04, 0.25, 0.03]} />
+        <Box
+          args={[0.16, 0.19, 0.16]}
+          color={C.coral}
+          position={[0.04, 0.34, 0.03]}
+        />
+        <Box
+          args={[0.2, 0.03, 0.2]}
+          color={C.coral}
+          position={[0.04, 0.25, 0.03]}
+        />
       </group>
       {/* gantry + hot end */}
       <group ref={head}>
-        <Box args={[0.22, 0.2, 0.2]} color={C.dark} position={[0, 0.78, -0.24]} />
+        <Box
+          args={[0.22, 0.2, 0.2]}
+          color={C.dark}
+          position={[0, 0.78, -0.24]}
+        />
         <mesh position={[0, 0.66, -0.24]} castShadow>
           <coneGeometry args={[0.05, 0.12, 8]} />
-          <meshStandardMaterial color="#a8562f" emissive="#a8562f" emissiveIntensity={0.7} roughness={0.4} />
+          <meshStandardMaterial
+            color="#a8562f"
+            emissive="#a8562f"
+            emissiveIntensity={0.7}
+            roughness={0.4}
+          />
         </mesh>
       </group>
       {/* filament spool on the top rail */}
-      <group ref={spool} position={[0, 1.5, -0.32]} rotation={[Math.PI / 2, 0, 0]}>
-        <Cyl args={[0.26, 0.26, 0.1, 16]} color={C.teal} rotation={[Math.PI / 2, 0, 0]} />
-        <Cyl args={[0.1, 0.1, 0.13, 10]} color={C.cream} rotation={[Math.PI / 2, 0, 0]} />
+      <group
+        ref={spool}
+        position={[0, 1.5, -0.32]}
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        <Cyl
+          args={[0.26, 0.26, 0.1, 16]}
+          color={C.teal}
+          rotation={[Math.PI / 2, 0, 0]}
+        />
+        <Cyl
+          args={[0.1, 0.1, 0.13, 10]}
+          color={C.cream}
+          rotation={[Math.PI / 2, 0, 0]}
+        />
       </group>
       {/* filament run to the hot end */}
-      <Cyl args={[0.012, 0.012, 0.6, 6]} color={C.teal} position={[0, 1.18, -0.3]} rotation={[0.2, 0, 0.1]} />
+      <Cyl
+        args={[0.012, 0.012, 0.6, 6]}
+        color={C.teal}
+        position={[0, 1.18, -0.3]}
+        rotation={[0.2, 0, 0.1]}
+      />
       {/* little control screen */}
       <mesh position={[0.3, 0.19, 0.44]} rotation={[-0.5, 0, 0]}>
         <planeGeometry args={[0.26, 0.14]} />
-        <meshStandardMaterial color={C.screenWarm} emissive={C.screenWarm} emissiveIntensity={1.3} toneMapped={false} />
+        <meshStandardMaterial
+          color={C.screenWarm}
+          emissive={C.screenWarm}
+          emissiveIntensity={1.3}
+          toneMapped={false}
+        />
       </mesh>
     </group>
   );
@@ -708,21 +961,45 @@ export function PrintedBits({ position, rotation, scale = 1 }: P) {
         <dodecahedronGeometry args={[0.09]} />
         <meshStandardMaterial color={C.green} roughness={0.6} />
       </mesh>
-      <Box args={[0.12, 0.12, 0.12]} color={C.yellow} position={[0.24, 0.06, -0.03]} rotation={[0, 0.5, 0]} />
+      <Box
+        args={[0.12, 0.12, 0.12]}
+        color={C.yellow}
+        position={[0.24, 0.06, -0.03]}
+        rotation={[0, 0.5, 0]}
+      />
     </group>
   );
 }
 
 /* ------------------------------------------------------------ room kit */
 
-export function Shelf({ position, rotation, scale = 1, levels = 3, w = 2.2 }: P & { levels?: number; w?: number }) {
+export function Shelf({
+  position,
+  rotation,
+  scale = 1,
+  levels = 3,
+  w = 2.2,
+}: P & { levels?: number; w?: number }) {
   return (
     <group position={position} rotation={rotation} scale={scale}>
       {Array.from({ length: levels }).map((_, i) => (
-        <Box key={i} args={[w, 0.07, 0.55]} color={C.wood} position={[0, 0.5 + i * 0.66, 0]} />
+        <Box
+          key={i}
+          args={[w, 0.07, 0.55]}
+          color={C.wood}
+          position={[0, 0.5 + i * 0.66, 0]}
+        />
       ))}
-      <Box args={[0.09, levels * 0.66 + 0.5, 0.55]} color={C.woodDark} position={[-w / 2, (levels * 0.66) / 2 + 0.25, 0]} />
-      <Box args={[0.09, levels * 0.66 + 0.5, 0.55]} color={C.woodDark} position={[w / 2, (levels * 0.66) / 2 + 0.25, 0]} />
+      <Box
+        args={[0.09, levels * 0.66 + 0.5, 0.55]}
+        color={C.woodDark}
+        position={[-w / 2, (levels * 0.66) / 2 + 0.25, 0]}
+      />
+      <Box
+        args={[0.09, levels * 0.66 + 0.5, 0.55]}
+        color={C.woodDark}
+        position={[w / 2, (levels * 0.66) / 2 + 0.25, 0]}
+      />
     </group>
   );
 }
@@ -732,7 +1009,9 @@ export function Rug({
   scale = 1,
   color = '#8a5b57',
 }: P & { color?: string }) {
-  const trim = new THREE.Color(color).lerp(new THREE.Color('#ffffff'), 0.22).getStyle();
+  const trim = new THREE.Color(color)
+    .lerp(new THREE.Color('#ffffff'), 0.22)
+    .getStyle();
   return (
     <group position={position} scale={scale}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
@@ -779,7 +1058,9 @@ export function Posters({
             <mesh position={[0, -h * 0.12, 0.015]}>
               <circleGeometry args={[Math.min(w, h) * 0.22, 20]} />
               <meshStandardMaterial
-                color={new THREE.Color(c).lerp(new THREE.Color('#ffffff'), 0.55).getStyle()}
+                color={new THREE.Color(c)
+                  .lerp(new THREE.Color('#ffffff'), 0.55)
+                  .getStyle()}
                 roughness={0.9}
               />
             </mesh>
@@ -794,17 +1075,40 @@ export function Posters({
 export function FloorLamp({ position, scale = 1 }: P) {
   return (
     <group position={position} scale={scale}>
-      <Cyl args={[0.28, 0.3, 0.06, 14]} color={C.dark} position={[0, 0.03, 0]} />
-      <Cyl args={[0.035, 0.035, 1.9, 8]} color={C.dark} position={[0, 0.95, 0]} />
+      <Cyl
+        args={[0.28, 0.3, 0.06, 14]}
+        color={C.dark}
+        position={[0, 0.03, 0]}
+      />
+      <Cyl
+        args={[0.035, 0.035, 1.9, 8]}
+        color={C.dark}
+        position={[0, 0.95, 0]}
+      />
       <mesh position={[0, 2.0, 0]} castShadow>
         <coneGeometry args={[0.42, 0.5, 14, 1, true]} />
-        <meshStandardMaterial color={C.cream} side={THREE.DoubleSide} roughness={0.85} />
+        <meshStandardMaterial
+          color={C.cream}
+          side={THREE.DoubleSide}
+          roughness={0.85}
+        />
       </mesh>
       <mesh position={[0, 1.86, 0]}>
         <sphereGeometry args={[0.15, 10, 8]} />
-        <meshStandardMaterial color="#ffd9a0" emissive="#ffd9a0" emissiveIntensity={2.4} toneMapped={false} />
+        <meshStandardMaterial
+          color="#ffd9a0"
+          emissive="#ffd9a0"
+          emissiveIntensity={2.4}
+          toneMapped={false}
+        />
       </mesh>
-      <pointLight position={[0, 1.86, 0]} intensity={9} distance={7} decay={2} color="#ffcf9b" />
+      <pointLight
+        position={[0, 1.86, 0]}
+        intensity={9}
+        distance={7}
+        decay={2}
+        color="#ffcf9b"
+      />
     </group>
   );
 }
@@ -816,7 +1120,12 @@ export function Window({ position, rotation, scale = 1 }: P) {
       <Box args={[2.1, 1.5, 0.08]} color={C.cream} />
       <mesh position={[0, 0, 0.05]}>
         <planeGeometry args={[1.85, 1.25]} />
-        <meshStandardMaterial color="#7fa8c4" emissive="#8fb6cf" emissiveIntensity={0.85} toneMapped={false} />
+        <meshStandardMaterial
+          color="#7fa8c4"
+          emissive="#8fb6cf"
+          emissiveIntensity={0.85}
+          toneMapped={false}
+        />
       </mesh>
       <Box args={[0.06, 1.3, 0.03]} color={C.cream} position={[0, 0, 0.07]} />
       <Box args={[1.9, 0.06, 0.03]} color={C.cream} position={[0, 0, 0.07]} />
@@ -825,7 +1134,13 @@ export function Window({ position, rotation, scale = 1 }: P) {
 }
 
 /** String lights along a wall. */
-export function StringLights({ position, rotation, scale = 1, count = 9, w = 4 }: P & { count?: number; w?: number }) {
+export function StringLights({
+  position,
+  rotation,
+  scale = 1,
+  count = 9,
+  w = 4,
+}: P & { count?: number; w?: number }) {
   const g = useRef<THREE.Group>(null);
   useFrame(({ clock }) => {
     if (!g.current) return;
@@ -840,7 +1155,10 @@ export function StringLights({ position, rotation, scale = 1, count = 9, w = 4 }
       {Array.from({ length: count }).map((_, i) => {
         const t = i / (count - 1);
         return (
-          <mesh key={i} position={[-w / 2 + t * w, Math.sin(t * Math.PI) * -0.22, 0]}>
+          <mesh
+            key={i}
+            position={[-w / 2 + t * w, Math.sin(t * Math.PI) * -0.22, 0]}
+          >
             <sphereGeometry args={[0.055, 8, 6]} />
             <meshStandardMaterial
               color="#ffd9a0"
