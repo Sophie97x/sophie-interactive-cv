@@ -1,8 +1,9 @@
 import { useContext, useEffect, useMemo, useRef } from 'react';
-import { RoomAppearance } from './appearance';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Box, Cyl } from './props';
+import { RoomAppearance } from './appearance';
+import type { HairStyle } from '@/lib/profile';
 import { deskPose, DESK_LAYOUT, DESK_TOP, fingerPress } from './desk-motion';
 
 type V3 = [number, number, number];
@@ -44,8 +45,105 @@ function Limb({
   );
 }
 
-function WavyHair() {
-  const { hair } = useContext(RoomAppearance);
+/**
+ * Hair, in seven styles. Each starts from the same skull cap so the head keeps
+ * its silhouette, then adds whatever the style needs on top.
+ */
+function Hair({ style, color }: { style: HairStyle; color: string }) {
+  const dark = useMemo(
+    () => new THREE.Color(color).multiplyScalar(0.82).getStyle(),
+    [color],
+  );
+  // The cap everything shares.
+  const cap = (
+    <>
+      <Soft at={[0, 0.08, -0.05]} size={[0.235, 0.23, 0.195]} color={color} />
+      <Soft at={[-0.14, 0.145, 0.09]} size={[0.11, 0.09, 0.08]} color={color} />
+      <Soft at={[0.13, 0.16, 0.09]} size={[0.11, 0.09, 0.085]} color={color} />
+    </>
+  );
+
+  if (style === 'buzz')
+    return (
+      <group>
+        <Soft at={[0, 0.075, -0.04]} size={[0.222, 0.205, 0.185]} color={color} />
+      </group>
+    );
+
+  if (style === 'short')
+    return (
+      <group>
+        {cap}
+        <Soft at={[0, 0.02, -0.16]} size={[0.2, 0.15, 0.1]} color={color} />
+      </group>
+    );
+
+  if (style === 'curly')
+    return (
+      <group>
+        {cap}
+        {Array.from({ length: 22 }, (_, i) => {
+          const a = (i / 22) * Math.PI * 2;
+          const ring = i % 2 === 0 ? 0.2 : 0.16;
+          return (
+            <Soft
+              key={i}
+              at={[
+                Math.cos(a) * ring,
+                0.1 + Math.sin(i * 1.7) * 0.07,
+                -0.04 + Math.sin(a) * ring * 0.85,
+              ]}
+              size={[0.075, 0.072, 0.075]}
+              color={i % 3 === 0 ? dark : color}
+            />
+          );
+        })}
+      </group>
+    );
+
+  if (style === 'bun')
+    return (
+      <group>
+        {cap}
+        <Soft at={[0, 0.02, -0.16]} size={[0.19, 0.14, 0.1]} color={color} />
+        <Soft at={[0, 0.19, -0.17]} size={[0.105, 0.1, 0.1]} color={color} />
+        <mesh position={[0, 0.145, -0.165]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.075, 0.014, 6, 18]} />
+          <meshStandardMaterial color={dark} roughness={0.9} />
+        </mesh>
+      </group>
+    );
+
+  if (style === 'ponytail')
+    return (
+      <group>
+        {cap}
+        <Soft at={[0, 0.02, -0.16]} size={[0.19, 0.14, 0.1]} color={color} />
+        <mesh position={[0, 0.05, -0.2]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.055, 0.016, 6, 16]} />
+          <meshStandardMaterial color={dark} roughness={0.9} />
+        </mesh>
+        <Soft at={[0, -0.11, -0.235]} size={[0.07, 0.19, 0.07]} color={color} />
+        <Soft at={[0, -0.27, -0.225]} size={[0.05, 0.1, 0.05]} color={color} />
+      </group>
+    );
+
+  // 'bob' and 'long' both use the flowing locks, cut to different lengths.
+  return (
+    <group>
+      {cap}
+      <WavyHair length={style === 'bob' ? 0.46 : 1} color={color} />
+    </group>
+  );
+}
+
+function WavyHair({
+  length = 1,
+  color = '#8c3b35',
+}: {
+  length?: number;
+  color?: string;
+}) {
   const locks = useMemo(
     () =>
       Array.from({ length: 28 }, (_, i) => {
@@ -56,7 +154,7 @@ function WavyHair() {
           return new THREE.Vector3(
             side * (0.2 + 0.065 * t) +
               Math.sin(t * Math.PI * 3 + i * 0.7) * 0.014,
-            0.14 - t * (0.87 - Math.abs(side) * 0.08),
+            0.14 - t * (0.87 - Math.abs(side) * 0.08) * length,
             -Math.sin(angle) * 0.17 +
               0.045 * t +
               Math.sin(t * Math.PI * 2 + i) * 0.018,
@@ -64,26 +162,32 @@ function WavyHair() {
         });
         return new THREE.CatmullRomCurve3(points);
       }),
-    [],
+    [length],
+  );
+  const nape = useMemo(
+    () => new THREE.Color(color).multiplyScalar(0.94).getStyle(),
+    [color],
+  );
+  // Four shades around the chosen colour, so the locks read as strands.
+  const strands = useMemo(
+    () =>
+      [0.98, 1.09, 0.86, 1.16].map((m) =>
+        new THREE.Color(color).multiplyScalar(m).getStyle(),
+      ),
+    [color],
   );
   return (
     <group>
       <Soft
-        at={[0, -0.19, -0.09]}
-        size={[0.225, 0.43, 0.135]}
-        color={hair === '#963f3a' ? '#8c3b35' : hair}
+        at={[0, -0.19 * length, -0.09]}
+        size={[0.225, 0.43 * length, 0.135]}
+        color={nape}
       />
       {locks.map((curve, i) => (
         <mesh key={i} castShadow>
           <tubeGeometry args={[curve, 32, 0.023 - (i % 3) * 0.003, 8, false]} />
           <meshStandardMaterial
-            color={
-              hair === '#963f3a'
-                ? ['#943f37', '#a54c3e', '#81353b', '#b25b45'][i % 4]
-                : new THREE.Color(hair).multiplyScalar(
-                    [1, 1.1, 0.87, 1.18][i % 4],
-                  )
-            }
+            color={strands[i % 4]}
             roughness={0.8}
           />
         </mesh>
@@ -136,7 +240,13 @@ export function DeskAvatar({ motion }: { motion: boolean }) {
     glow = useRef<THREE.PointLight>(null);
   const upperArms = useRef<(THREE.Mesh | null)[]>([]);
   const elbows = useRef<(THREE.Group | null)[]>([]);
-  const { skin, hoodie, hair } = useContext(RoomAppearance);
+  // Colours and hair come from whatever the owner picked in the studio; the
+  // defaults in the context keep Sophie's own room looking as it always did.
+  const appearance = useContext(RoomAppearance);
+  const skin = appearance.skin,
+    hoodie = appearance.hoodie,
+    hair = appearance.hair,
+    hairStyle = appearance.hairStyle ?? 'long';
   const moveArm = (mesh: THREE.Mesh | null, elbow: V3, hand: V3) => {
     if (!mesh) return;
     const start = new THREE.Vector3(...elbow),
@@ -339,7 +449,7 @@ export function DeskAvatar({ motion }: { motion: boolean }) {
                 key={x}
                 at={[x, 0.024, 0.043]}
                 size={[0.012, 0.005, 0.012]}
-                color={skin === '#efc6b5' ? '#e4b4a2' : skin}
+                color="#e4b4a2"
               />
             ))}
             {side < 0 && (
@@ -370,14 +480,7 @@ export function DeskAvatar({ motion }: { motion: boolean }) {
       ))}
       <group ref={head} position={[0, 1.9, 0.06]} scale={0.85}>
         <Face color={skin} />
-        <Soft at={[0, 0.08, -0.05]} size={[0.235, 0.23, 0.195]} color={hair} />
-        <Soft
-          at={[-0.14, 0.145, 0.09]}
-          size={[0.11, 0.09, 0.08]}
-          color={hair}
-        />
-        <Soft at={[0.13, 0.16, 0.09]} size={[0.11, 0.09, 0.085]} color={hair} />
-        <WavyHair />
+        <Hair style={hairStyle} color={hair} />
         {[-1, 1].map((side) => (
           <group key={side} position={[side * 0.205, -0.025, 0.005]}>
             <Soft at={[0, 0, 0]} size={[0.028, 0.052, 0.028]} color={skin} />

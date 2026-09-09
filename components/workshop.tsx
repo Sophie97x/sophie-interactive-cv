@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { sitePath } from '@/lib/site';
 import {
   ArrowUp,
   Settings2,
@@ -296,7 +297,7 @@ export default function Workshop() {
             </a>
             {/* Full navigation opens the self-hosted editor shell. */}
             {/* oxlint-disable-next-line next/no-html-link-for-pages */}
-            <a href="/edit">Make your own ↗</a>
+            <a href={sitePath('edit/')}>Make your own ↗</a>
           </nav>
           <button
             className="theme-toggle"

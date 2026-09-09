@@ -1,6 +1,10 @@
 .studio,
 .personal-page,
 .studio-loading {
+  /* globals.css declares `color-scheme: dark` for the main site. The studio
+     and the published pages are light, and without this every native control
+     — checkboxes, colour pickers, scrollbars — is painted dark on cream. */
+  color-scheme: light;
   color: #292737;
   background: #faf9f6;
   font-family: Arial, Helvetica, sans-serif;
@@ -303,10 +307,12 @@
   font-size: 13px;
 }
 .studio-check input {
-  width: 18px;
-  height: 18px;
   accent-color: #7358b5;
-  margin-top: 3px;
+  /* Forcing width/height on a native checkbox makes Chromium paint it as a
+     solid black square, so scale the real control up instead. */
+  transform: scale(1.2);
+  transform-origin: left center;
+  margin: 4px 4px 0 1px;
   flex-shrink: 0;
 }
 .studio-check small {
@@ -766,4 +772,455 @@
   .personal-card {
     break-inside: avoid;
   }
+}
+
+/* ---------------------------------------------------- CV import */
+
+.studio-import {
+  border: 1px solid var(--studio-line, #e3e0ea);
+  border-radius: 14px;
+  padding: 14px 16px 16px;
+  background: var(--studio-soft, #f7f6fb);
+  display: grid;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.studio-import-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.studio-import-head svg {
+  margin-top: 2px;
+  flex: none;
+  color: var(--studio-ink, #4b3f8f);
+}
+.studio-import-head strong {
+  display: block;
+  font-size: 0.95rem;
+}
+.studio-import-head small {
+  display: block;
+  color: #6b6577;
+  line-height: 1.45;
+  margin-top: 2px;
+}
+.studio-import-drop {
+  position: relative;
+  display: block;
+  border: 1.5px dashed var(--studio-line, #cfc9dd);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+.studio-import-drop:hover {
+  border-color: var(--studio-ink, #7059ce);
+  background: #fdfcff;
+}
+.studio-import-drop input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.studio-import-drop span {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #4a4458;
+}
+.studio-import-result p {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin: 0 0 4px;
+  color: #3f7a52;
+}
+.studio-import-result svg {
+  margin-top: 3px;
+  flex: none;
+}
+.studio-import-result .studio-import-note {
+  color: #8a6320;
+}
+
+/* ------------------------------------------------ room controls */
+
+.studio-sub {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b6577;
+  margin: 18px 0 2px;
+}
+.studio-sub:first-of-type {
+  margin-top: 6px;
+}
+
+.studio-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.studio-choice button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--studio-line, #ddd8e6);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.studio-choice button:hover {
+  border-color: #b3a9cf;
+}
+.studio-choice button.is-on {
+  border-color: var(--studio-ink, #7059ce);
+  background: #f1edff;
+  color: #4b3f8f;
+  font-weight: 500;
+}
+.studio-choice button span {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.studio-zones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 6px 14px;
+}
+.studio-zone {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.87rem;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.studio-zone input {
+  accent-color: var(--studio-ink, #7059ce);
+}
+
+.studio-reset {
+  align-self: start;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-size: 0.82rem;
+  color: #6b6577;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.studio-reset:hover {
+  color: var(--studio-ink, #4b3f8f);
+}
+
+/* ------------------------------------------------- theme presets */
+
+.studio-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 8px;
+}
+.studio-theme {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--studio-line, #ddd8e6);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.studio-theme:hover {
+  border-color: var(--studio-ink, #7059ce);
+  box-shadow: 0 2px 10px -6px rgba(80, 60, 160, 0.5);
+}
+.studio-theme-swatch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex: none;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.studio-theme-swatch i {
+  display: block;
+}
+
+/* ------------------------------------------- steppers and posters */
+
+.studio-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.87rem;
+  padding: 2px 0;
+}
+.studio-stepper > div {
+  display: flex;
+  gap: 6px;
+}
+.studio-stepper button {
+  min-width: 34px;
+  height: 32px;
+  border: 1px solid var(--studio-line, #ddd8e6);
+  background: #fff;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.studio-stepper button:hover {
+  border-color: #b3a9cf;
+}
+.studio-stepper button.is-on {
+  border-color: var(--studio-ink, #7059ce);
+  background: #f1edff;
+  font-weight: 500;
+}
+.studio-posters button {
+  width: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.studio-posters button.is-on {
+  border-color: #2b2434;
+  background-clip: padding-box;
+}
+
+/* A zone that stands on another one's furniture greys out when that one is
+   switched off, and always says what it needs. */
+.studio-zone.is-blocked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.studio-zone small {
+  color: #8a8091;
+  font-size: 0.8em;
+}
+.studio-zone.is-blocked small {
+  color: #8a6320;
+}
+
+/* The edit key, shown so it can be read off the screen if the clipboard
+   is blocked. */
+.studio-key {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0 6px !important;
+}
+.studio-key span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b6577;
+}
+.studio-key code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  background: #f2f0f8;
+  border: 1px solid #e0dcea;
+  border-radius: 6px;
+  padding: 8px 10px;
+  user-select: all;
+  word-break: break-all;
+}
+
+/* -------------------------------------------- grouped room panels */
+/*
+ * The room step carries ten separate sets of controls. Flat, they made a
+ * 2,500px wall of identically-weighted knobs. Grouping them into four cards
+ * that open one concern at a time keeps the whole step in view.
+ */
+.studio-group {
+  border: 1px solid #e5e0e8;
+  border-radius: 14px;
+  background: #fffefd;
+  margin: 0 0 10px;
+  overflow: hidden;
+}
+.studio-group + .studio-reset {
+  margin-top: 6px;
+}
+.studio-group > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 13px 42px 13px 16px;
+  cursor: pointer;
+  position: relative;
+  list-style: none;
+  user-select: none;
+}
+.studio-group > summary::-webkit-details-marker {
+  display: none;
+}
+.studio-group > summary:hover {
+  background: #faf8fd;
+}
+.studio-group > summary:focus-visible {
+  outline: 2px solid #cabfe7;
+  outline-offset: -2px;
+}
+.studio-group > summary > span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #302936;
+}
+.studio-group > summary > small {
+  font-size: 12px;
+  color: #847b8a;
+  line-height: 1.4;
+}
+/* the chevron */
+.studio-group > summary::after {
+  content: '';
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -5px;
+  border-right: 2px solid #9a92a6;
+  border-bottom: 2px solid #9a92a6;
+  transform: rotate(45deg);
+  transition: transform 0.18s ease;
+}
+.studio-group[open] > summary::after {
+  transform: rotate(-135deg);
+  margin-top: -2px;
+}
+.studio-group[open] > summary {
+  border-bottom: 1px solid #efecf3;
+}
+.studio-group-body {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 16px 18px;
+}
+/* Inside a card the first heading needs no extra air above it. */
+.studio-group-body > .studio-sub:first-child {
+  margin-top: 12px;
+}
+
+/* Inside a card the colour pickers are one row of small swatches, not a
+   five-card grid three hundred pixels tall. */
+.studio-group-body .studio-colors {
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.studio-group-body .studio-colors label {
+  padding: 8px 10px;
+  gap: 9px;
+  border-radius: 10px;
+}
+.studio-group-body .studio-colors input {
+  width: 28px;
+  height: 28px;
+}
+
+/* A heading can carry a plain-English aside about what its controls do. */
+.studio-sub em {
+  display: block;
+  margin-top: 3px;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: #847b8a;
+}
+/* Text fields inside a card need air above them, since the control before is
+   usually a row of pills sitting right on the baseline. */
+.studio-group-body .studio-field {
+  margin: 14px 0 4px;
+}
+
+/* -------------------------------------------- pre-publish checklist */
+.studio-checklist {
+  list-style: none;
+  margin: 22px 0;
+  padding: 6px;
+  border: 1px solid #e0d9e7;
+  border-radius: 12px;
+}
+.studio-checklist li {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.studio-checklist li + li {
+  border-top: 1px solid #f0ecf3;
+}
+.studio-checklist small {
+  display: block;
+  font-weight: 400;
+  color: #817a87;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.studio-checklist li > span[aria-hidden] {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px dashed #c3bacd;
+  flex-shrink: 0;
+}
+.studio-checklist li > svg {
+  color: #66825e;
+  flex-shrink: 0;
+}
+.studio-checklist li > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.studio-checklist button {
+  border: 1px solid #ded5e8;
+  background: #fffdfa;
+  color: #655178;
+  border-radius: 8px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.studio-checklist button:hover {
+  border-color: #b3a9cf;
+}
+
+/* Once you are past the first step the welcome has done its job, so it steps
+   back and hands roughly 200px of the column to the controls. */
+.studio-welcome.is-compact h1 {
+  font-size: clamp(24px, 2vw, 30px);
+  letter-spacing: -1px;
+  margin: 8px 0 0;
+}
+.studio-welcome.is-compact h1 br {
+  display: none;
+}
+.studio-welcome.is-compact p {
+  display: none;
 }

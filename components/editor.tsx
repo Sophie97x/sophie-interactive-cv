@@ -13,15 +13,35 @@ import {
   Plus,
   Save,
   Trash2,
+  Upload,
 } from 'lucide-react';
 import PersonalPortfolio from './personal-portfolio';
+import ShareRoom from './share-room';
+import { staticHosting, sitePath } from '@/lib/site';
+import { importCvFile } from '@/lib/cv-import';
 import {
   defaultProfile,
+  defaultRoom,
+  hairStyles,
+  layoutKinds,
+  petKinds,
+  shellKinds,
   suggestedSlug,
   validSlug,
   validateProfile,
+  themes,
+  timesOfDay,
+  zoneIds,
+  zoneRequires,
+  type HairStyle,
+  type LayoutKind,
+  type PetKind,
+  type ShellKind,
   type Profile,
   type ProfileItem,
+  type RoomOptions,
+  type TimeOfDay,
+  type ZoneId,
 } from '@/lib/profile';
 
 type Draft = {
@@ -30,7 +50,7 @@ type Draft = {
   editKey: string;
   revision: number;
 };
-const storageKey = 'attic-studio-v1';
+const storageKey = staticHosting ? 'attic-studio-pages-v1' : 'attic-studio-v1';
 const emptyDraft = (): Draft => ({
   profile: structuredClone(defaultProfile),
   slug: '',
@@ -48,7 +68,15 @@ async function api(path: string, method = 'GET', body?: unknown, key?: string) {
     },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
-  const data = await response.json();
+  const data = (await response.json()) as {
+    error?: string;
+    publishing: boolean;
+    origin: string;
+    available: boolean;
+    profile: Profile;
+    slug: string;
+    revision: number;
+  };
   if (!response.ok)
     throw new Error(data.error || 'Could not save. Please try again.');
   return data;
@@ -61,6 +89,7 @@ function newKey() {
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 }
+/** Offer the page details as a file, for anyone who would rather keep one. */
 function download(name: string, text: string) {
   const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
   const link = document.createElement('a');
@@ -125,6 +154,11 @@ export default function Editor() {
   const [openSlug, setOpenSlug] = useState('');
   const [openKey, setOpenKey] = useState('');
   const [showPreview, setShowPreview] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importSummary, setImportSummary] = useState<{
+    filled: string[];
+    notes: string[];
+  } | null>(null);
   const { profile, slug, editKey, revision } = draft;
 
   useEffect(() => {
@@ -156,6 +190,7 @@ export default function Editor() {
     }
     setOrigin(window.location.origin);
     setHydrated(true);
+    if (staticHosting) return;
     api('config')
       .then((config) => {
         setOnline(true);
@@ -217,6 +252,117 @@ export default function Editor() {
     };
   }, [slug, revision, online]);
 
+  /** Update one room option without disturbing the rest of the profile. */
+  function roomField<K extends keyof RoomOptions>(
+    key: K,
+    value: RoomOptions[K],
+  ) {
+    setDraft((d) => ({
+      ...d,
+      profile: {
+        ...d.profile,
+        room: { ...(d.profile.room ?? defaultRoom), [key]: value },
+      },
+    }));
+  }
+
+  /** Apply a whole palette at once, leaving the pet, zones and layout alone. */
+  function applyTheme(id: string) {
+    const t = themes.find((x) => x.id === id);
+    if (!t) return;
+    setDraft((d) => ({
+      ...d,
+      profile: {
+        ...d.profile,
+        appearance: {
+          ...d.profile.appearance,
+          accent: t.accent,
+          night: t.timeOfDay === 'night',
+        },
+        room: {
+          ...(d.profile.room ?? defaultRoom),
+          wall: t.wall,
+          floor: t.floor,
+          rug: t.rug,
+          desk: t.desk,
+          beanbag: t.beanbag,
+          shelf: t.shelf,
+          timeOfDay: t.timeOfDay,
+        },
+      },
+    }));
+  }
+
+  function togglePoster(color: string) {
+    const current = draft.profile.room?.posters ?? [];
+    roomField(
+      'posters',
+      current.includes(color)
+        ? current.filter((c) => c !== color)
+        : [...current, color].slice(0, 3),
+    );
+  }
+
+  function toggleZone(id: ZoneId) {
+    const current = draft.profile.room?.zones ?? defaultRoom.zones;
+    const next = current.includes(id)
+      ? current.filter((z) => z !== id)
+      : [...current, id];
+    // Never let the room end up completely empty.
+    roomField('zones', next.length ? next : current);
+  }
+
+  /**
+   * Read an uploaded CV and fill the form from it. Parsing happens in this
+   * browser — the file is never uploaded anywhere — and it only overwrites
+   * fields it actually found something for, so a partial CV cannot wipe work
+   * that has already been typed in.
+   */
+  async function onCvFile(file: File | null | undefined) {
+    if (!file) return;
+    setImporting(true);
+    setError('');
+    setImportSummary(null);
+    try {
+      const result = await importCvFile(file);
+      setDraft((d) => {
+        const found = result.profile;
+        if (file.name.toLowerCase().endsWith('.json'))
+          return { ...emptyDraft(), profile: found };
+        const keep = <T,>(incoming: T, existing: T) =>
+          incoming && String(incoming).trim() ? incoming : existing;
+        return {
+          ...d,
+          profile: {
+            ...d.profile,
+            name: keep(found.name, d.profile.name),
+            headline: keep(found.headline, d.profile.headline),
+            location: keep(found.location, d.profile.location),
+            bio: keep(found.bio, d.profile.bio),
+            contactUrl: keep(found.contactUrl, d.profile.contactUrl),
+            skills: keep(found.skills, d.profile.skills),
+            experience: found.experience.length
+              ? found.experience
+              : d.profile.experience,
+            projects: found.projects.length
+              ? found.projects
+              : d.profile.projects,
+          },
+        };
+      });
+      setImportSummary({ filled: result.filled, notes: result.notes });
+      setMessage(
+        result.filled.length
+          ? `Read your CV and filled in ${result.filled.join(', ')}.`
+          : 'That file was read, but nothing recognisable came out of it.',
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'That file could not be read.');
+    } finally {
+      setImporting(false);
+    }
+  }
+
   function field<K extends keyof Profile>(key: K, value: Profile[K]) {
     setDraft((d) => ({ ...d, profile: { ...d.profile, [key]: value } }));
     setMessage('');
@@ -259,10 +405,8 @@ export default function Editor() {
       try {
         localStorage.setItem(storageKey, JSON.stringify(pending));
       } catch {
-        download(
-          `${slug}-edit-key.txt`,
-          `Page: ${origin}/${slug}\nPrivate edit key: ${key}\nKeep this private. Open ${origin}/edit to edit or remove your page.\n`,
-        );
+        // This browser will not keep the draft, so the key only exists here.
+        void copy(key, 'Edit key');
       }
       const result = await api(
         revision ? `portfolios/${slug}` : 'portfolios',
@@ -352,15 +496,58 @@ export default function Editor() {
       setBusy(false);
     }
   }
-  async function copy(value: string) {
+  async function copy(value: string, what = 'Link') {
     try {
       await navigator.clipboard.writeText(value);
-      setMessage('Link copied.');
+      setMessage(`${what} copied.`);
     } catch {
-      setError('Copy is unavailable here. Select and copy the link instead.');
+      setError(
+        `Copy is unavailable here. Select and copy the ${what.toLowerCase()} by hand instead.`,
+      );
     }
   }
   const shareUrl = `${origin}/${slug || 'your-name'}`;
+
+  /*
+   * What still stands between this draft and a published page. The publish
+   * call validates the same things, but only after the click — this says so
+   * up front and offers a way straight to the step that fixes it.
+   */
+  const readiness: {
+    label: string;
+    detail: string;
+    done: boolean;
+    step?: number;
+  }[] = [
+    {
+      label: 'Your name',
+      detail: profile.name.trim() || 'Needed on the page itself',
+      done: !!profile.name.trim(),
+      step: 0,
+    },
+    {
+      label: 'What you do',
+      detail: profile.headline.trim() || 'One line under your name',
+      done: !!profile.headline.trim(),
+      step: 0,
+    },
+    {
+      label: 'Your story',
+      detail: `${profile.experience.length} ${
+        profile.experience.length === 1 ? 'experience' : 'experiences'
+      } · ${profile.projects.length} ${
+        profile.projects.length === 1 ? 'project' : 'projects'
+      }`,
+      done: profile.experience.length > 0 || profile.projects.length > 0,
+      step: 1,
+    },
+    {
+      label: 'Your address',
+      detail: validSlug(slug) ? shareUrl : 'Pick a page address below',
+      done: validSlug(slug),
+    },
+  ];
+  const ready = readiness.every((c) => c.done);
   // Invalid links can remain in a draft, but must never become clickable preview URLs.
   const safeLink = (value: string) => {
     try {
@@ -381,7 +568,7 @@ export default function Editor() {
   return (
     <main className={`studio ${showPreview ? 'preview-open' : ''}`}>
       <header className="studio-header">
-        <a className="studio-brand" href="/">
+        <a className="studio-brand" href={sitePath()}>
           <House size={23} />
           <span>
             little room<span className="studio-brand-dot">.</span>
@@ -403,11 +590,10 @@ export default function Editor() {
       </header>
       <div className="studio-layout">
         <section className="studio-editor" aria-label="CV editor">
-          <div className="studio-welcome">
+          <div className={`studio-welcome${step > 0 ? ' is-compact' : ''}`}>
             <span className="studio-eyebrow">Your story, your space</span>
             <h1>
-              Make yourself
-              <br />
+              Make yourself <br />
               at home<span>.</span>
             </h1>
             <p>
@@ -438,7 +624,7 @@ export default function Editor() {
                     'The jobs, studies and experiences that got you here.',
                     'Big ideas, small experiments, things you’re proud of.',
                     'A few little details to make this space feel like yours.',
-                    'Pick your address. Check the details. Let people in.',
+                    staticHosting ? 'Check your details. Create a link. Let people in.' : 'Pick your address. Check the details. Let people in.',
                   ][step]
                 }
               </p>
@@ -446,6 +632,51 @@ export default function Editor() {
             <fieldset disabled={busy || !hydrated}>
               {step === 0 && (
                 <>
+                  <div className="studio-import">
+                    <div className="studio-import-head">
+                      <Upload size={18} />
+                      <div>
+                        <strong>Start from your CV</strong>
+                        <small>
+                          Upload a PDF, Word file or plain text and we will fill
+                          this in for you. It is read on your own device and
+                          never uploaded anywhere.
+                        </small>
+                      </div>
+                    </div>
+                    <label className="studio-import-drop">
+                      <input
+                        type="file"
+                        accept=".pdf,.docx,.txt,.md,.json,.rtf,application/pdf,text/plain"
+                        disabled={importing}
+                        onChange={(e) => {
+                          void onCvFile(e.target.files?.[0]);
+                          e.target.value = '';
+                        }}
+                      />
+                      <span>
+                        {importing
+                          ? 'Reading your CV…'
+                          : 'Choose a file · PDF, DOCX, TXT'}
+                      </span>
+                    </label>
+                    {importSummary && (
+                      <div className="studio-import-result">
+                        {importSummary.filled.length > 0 && (
+                          <p>
+                            <Check size={14} /> Filled in{' '}
+                            {importSummary.filled.join(', ')}. Check it over
+                            below — nothing is published yet.
+                          </p>
+                        )}
+                        {importSummary.notes.map((note) => (
+                          <p key={note} className="studio-import-note">
+                            {note}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <TextField
                     label="Your name *"
                     value={profile.name}
@@ -592,57 +823,436 @@ export default function Editor() {
                 })()}
               {step === 3 && (
                 <>
-                  <div className="studio-colors">
-                    {(['skin', 'hair', 'hoodie', 'accent'] as const).map(
-                      (key) => (
-                        <label key={key} aria-label={`${key} colour`}>
-                          <input
-                            type="color"
-                            value={profile.appearance[key]}
-                            onChange={(e) =>
-                              field('appearance', {
-                                ...profile.appearance,
-                                [key]: e.target.value,
-                              })
+                  <details className="studio-group" open>
+                    <summary>
+                      <span>The room</span>
+                      <small>Kind of space, palette and time of day</small>
+                    </summary>
+                    <div className="studio-group-body">
+                      <h3 className="studio-sub">
+                        Pick a look
+                        <em>sets the colours and the light in one go</em>
+                      </h3>
+                      <div className="studio-themes">
+                        {themes.map((t) => (
+                          <button
+                            type="button"
+                            key={t.id}
+                            className="studio-theme"
+                            onClick={() => applyTheme(t.id)}
+                            title={`Apply the ${t.label} palette`}
+                          >
+                            <span className="studio-theme-swatch">
+                              {[t.wall, t.floor, t.beanbag, t.desk].map((c) => (
+                                <i key={c} style={{ background: c }} />
+                              ))}
+                            </span>
+                            {t.label}
+                          </button>
+                        ))}
+                      </div>
+                      <h3 className="studio-sub">Kind of room</h3>
+                      <div className="studio-choice">
+                        {shellKinds.map((kind) => (
+                          <button
+                            type="button"
+                            key={kind}
+                            className={
+                              (profile.room?.shell ?? 'attic') === kind
+                                ? 'is-on'
+                                : ''
                             }
-                          />
-                          <span>
+                            onClick={() =>
+                              roomField('shell', kind as ShellKind)
+                            }
+                          >
+                            <span aria-hidden="true">
+                              {
+                                {
+                                  attic: '🏠',
+                                  loft: '🏙️',
+                                  cabin: '🌲',
+                                  studio: '🖼️',
+                                }[kind]
+                              }
+                            </span>
                             {
                               {
-                                skin: 'Skin tone',
-                                hair: 'Hair colour',
-                                hoodie: 'Jumper colour',
-                                accent: 'Page accent',
-                              }[key]
+                                attic: 'Attic',
+                                loft: 'Loft',
+                                cabin: 'Cabin',
+                                studio: 'Studio',
+                              }[kind]
                             }
-                          </span>
-                        </label>
-                      ),
-                    )}
-                  </div>
-                  <label className="studio-check" aria-label="A cosy evening">
-                    <input
-                      type="checkbox"
-                      checked={profile.appearance.night}
-                      onChange={(e) =>
-                        field('appearance', {
-                          ...profile.appearance,
-                          night: e.target.checked,
-                        })
-                      }
-                    />
-                    <span>
-                      <strong>A cosy evening</strong>
-                      <small>Start your room in night mode.</small>
-                    </span>
-                  </label>
+                          </button>
+                        ))}
+                      </div>
+                      <h3 className="studio-sub">Time of day</h3>
+                      <div className="studio-choice">
+                        {timesOfDay.map((t) => (
+                          <button
+                            type="button"
+                            key={t}
+                            className={
+                              (profile.room?.timeOfDay ?? 'day') === t
+                                ? 'is-on'
+                                : ''
+                            }
+                            onClick={() => {
+                              roomField('timeOfDay', t as TimeOfDay);
+                              field('appearance', {
+                                ...profile.appearance,
+                                night: t === 'night',
+                              });
+                            }}
+                          >
+                            <span aria-hidden="true">
+                              {{ day: '☀️', golden: '🌇', night: '🌙' }[t]}
+                            </span>
+                            {
+                              {
+                                day: 'Daylight',
+                                golden: 'Golden hour',
+                                night: 'Night',
+                              }[t]
+                            }
+                          </button>
+                        ))}
+                      </div>
+                      <h3 className="studio-sub">Arrangement</h3>
+                      <div className="studio-choice">
+                        {layoutKinds.map((kind) => (
+                          <button
+                            type="button"
+                            key={kind}
+                            className={
+                              (profile.room?.layout ?? defaultRoom.layout) ===
+                              kind
+                                ? 'is-on'
+                                : ''
+                            }
+                            onClick={() =>
+                              roomField('layout', kind as LayoutKind)
+                            }
+                          >
+                            {
+                              {
+                                classic: 'Classic',
+                                mirrored: 'Mirrored',
+                                cosy: 'Cosy',
+                              }[kind]
+                            }
+                          </button>
+                        ))}
+                      </div>
+                      <h3 className="studio-sub">Room colours</h3>
+                      <div className="studio-colors">
+                        {(
+                          [
+                            ['wall', 'Walls'],
+                            ['floor', 'Floor'],
+                            ['beanbag', 'Beanbag'],
+                            ['desk', 'Desk'],
+                            ['rug', 'Rug'],
+                          ] as const
+                        ).map(([key, label]) => (
+                          <label key={key} aria-label={`${label} colour`}>
+                            <input
+                              type="color"
+                              value={profile.room?.[key] ?? defaultRoom[key]}
+                              onChange={(e) => roomField(key, e.target.value)}
+                            />
+                            <span>{label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
+                  <details className="studio-group">
+                    <summary>
+                      <span>What’s in it</span>
+                      <small>
+                        Show or hide each corner, and the small extras
+                      </small>
+                    </summary>
+                    <div className="studio-group-body">
+                      <h3 className="studio-sub">What to show</h3>
+                      <div className="studio-zones">
+                        {zoneIds.map((id) => {
+                          const chosen =
+                            profile.room?.zones ?? defaultRoom.zones;
+                          const on = chosen.includes(id);
+                          // Some zones stand on another one's furniture.
+                          const needs = zoneRequires[id] as ZoneId | undefined;
+                          const blocked = needs
+                            ? !chosen.includes(needs)
+                            : false;
+                          const labels = {
+                            desk: 'Desk & screens',
+                            printer: '3D printer',
+                            homelab: 'Homelab',
+                            repair: 'Workbench',
+                            radio: 'Radio corner',
+                            projects: 'Hobby shelf',
+                            work: 'Work shelf',
+                          } as const;
+                          return (
+                            <label
+                              key={id}
+                              className={`studio-zone${blocked ? ' is-blocked' : ''}`}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={on && !blocked}
+                                disabled={blocked}
+                                onChange={() => toggleZone(id)}
+                              />
+                              <span>
+                                {labels[id]}
+                                {needs && (
+                                  <small>
+                                    {' '}
+                                    · {blocked ? 'needs' : 'sits on'} the{' '}
+                                    {labels[needs].toLowerCase()}
+                                  </small>
+                                )}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <h3 className="studio-sub">Little touches</h3>
+                      <label
+                        className="studio-check"
+                        aria-label="A rug on the floor"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={profile.room?.showRug ?? false}
+                          onChange={(e) =>
+                            roomField('showRug', e.target.checked)
+                          }
+                        />
+                        <span>
+                          <strong>A rug on the floor</strong>
+                          <small>Warms the middle of the room up.</small>
+                        </span>
+                      </label>
+                      <div className="studio-stepper">
+                        <span>Pot plants</span>
+                        <div>
+                          {[0, 1, 2, 3].map((n) => (
+                            <button
+                              type="button"
+                              key={n}
+                              className={
+                                (profile.room?.plants ?? 1) === n ? 'is-on' : ''
+                              }
+                              onClick={() => roomField('plants', n)}
+                            >
+                              {n}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="studio-stepper studio-posters">
+                        <span>Posters · pick up to three</span>
+                        <div>
+                          {(
+                            [
+                              ['#e8749c', 'Pink'],
+                              ['#6f9e77', 'Green'],
+                              ['#5fa0b8', 'Blue'],
+                              ['#e0a05e', 'Amber'],
+                              ['#8d7ce8', 'Violet'],
+                              ['#dc6a5a', 'Red'],
+                            ] as const
+                          ).map(([c, name]) => (
+                            <button
+                              type="button"
+                              key={c}
+                              title={`${name} poster`}
+                              aria-label={`${name} poster`}
+                              aria-pressed={(
+                                profile.room?.posters ?? []
+                              ).includes(c)}
+                              className={
+                                (profile.room?.posters ?? []).includes(c)
+                                  ? 'is-on'
+                                  : ''
+                              }
+                              style={{ background: c }}
+                              onClick={() => togglePoster(c)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </details>
+                  <details className="studio-group">
+                    <summary>
+                      <span>You</span>
+                      <small>Your colours and hair</small>
+                    </summary>
+                    <div className="studio-group-body">
+                      <h3 className="studio-sub">Your colours</h3>
+                      <div className="studio-colors">
+                        {(['skin', 'hair', 'hoodie', 'accent'] as const).map(
+                          (key) => (
+                            <label key={key} aria-label={`${key} colour`}>
+                              <input
+                                type="color"
+                                value={profile.appearance[key]}
+                                onChange={(e) =>
+                                  field('appearance', {
+                                    ...profile.appearance,
+                                    [key]: e.target.value,
+                                  })
+                                }
+                              />
+                              <span>
+                                {
+                                  {
+                                    skin: 'Skin tone',
+                                    hair: 'Hair colour',
+                                    hoodie: 'Jumper colour',
+                                    accent: 'Page accent',
+                                  }[key]
+                                }
+                              </span>
+                            </label>
+                          ),
+                        )}
+                      </div>
+                      <h3 className="studio-sub">Hair</h3>
+                      <div className="studio-choice">
+                        {hairStyles.map((style) => (
+                          <button
+                            type="button"
+                            key={style}
+                            className={
+                              (profile.appearance.hairStyle ?? 'long') === style
+                                ? 'is-on'
+                                : ''
+                            }
+                            onClick={() =>
+                              field('appearance', {
+                                ...profile.appearance,
+                                hairStyle: style as HairStyle,
+                              })
+                            }
+                          >
+                            {
+                              {
+                                long: 'Long',
+                                bob: 'Bob',
+                                short: 'Short',
+                                bun: 'Bun',
+                                ponytail: 'Ponytail',
+                                curly: 'Curly',
+                                buzz: 'Buzzed',
+                              }[style]
+                            }
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </details>
+                  <details className="studio-group">
+                    <summary>
+                      <span>Your pet</span>
+                      <small>Who keeps you company</small>
+                    </summary>
+                    <div className="studio-group-body">
+                      <h3 className="studio-sub">Who lives here</h3>
+                      <div className="studio-choice">
+                        {petKinds.map((kind) => (
+                          <button
+                            type="button"
+                            key={kind}
+                            className={
+                              (profile.room?.pet ?? defaultRoom.pet) === kind
+                                ? 'is-on'
+                                : ''
+                            }
+                            onClick={() => roomField('pet', kind as PetKind)}
+                          >
+                            <span aria-hidden="true">
+                              {
+                                {
+                                  quail: '🐦',
+                                  cat: '🐈',
+                                  dog: '🐕',
+                                  rabbit: '🐇',
+                                  fox: '🦊',
+                                  hamster: '🐹',
+                                  none: '∅',
+                                }[kind]
+                              }
+                            </span>
+                            {
+                              {
+                                quail: 'Quail',
+                                cat: 'Cat',
+                                dog: 'Dog',
+                                rabbit: 'Rabbit',
+                                fox: 'Fox',
+                                hamster: 'Hamster',
+                                none: 'No pet',
+                              }[kind]
+                            }
+                          </button>
+                        ))}
+                      </div>
+                      {(profile.room?.pet ?? 'quail') !== 'none' && (
+                        <>
+                          <TextField
+                            label="Pet’s name"
+                            value={profile.room?.petName ?? ''}
+                            onChange={(v) => roomField('petName', v)}
+                            max={24}
+                            placeholder="Give them a name"
+                          />
+                          {(profile.room?.pet ?? 'quail') !== 'quail' && (
+                            <div className="studio-colors">
+                              <label aria-label="Pet colour">
+                                <input
+                                  type="color"
+                                  value={
+                                    profile.room?.petColor ??
+                                    defaultRoom.petColor
+                                  }
+                                  onChange={(e) =>
+                                    roomField('petColor', e.target.value)
+                                  }
+                                />
+                                <span>Their colour</span>
+                              </label>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </details>
+                  <button
+                    type="button"
+                    className="studio-reset"
+                    onClick={() =>
+                      field('room', { ...defaultRoom, zones: [...zoneIds] })
+                    }
+                  >
+                    Reset the room to how it started
+                  </button>
                   <div className="studio-note">
-                    Your room keeps the typing, curious quail and working 3D
-                    printer. Try them in the preview.
+                    Everything here shows up in the preview straight away. The
+                    typing, the pet and the working 3D printer all keep going —
+                    click the pet to say hello.
                   </div>
                 </>
               )}
-              {step === 4 && (
+
+              {step === 4 && staticHosting && <ShareRoom profile={profile} />}
+              {step === 4 && !staticHosting && (
                 <>
                   <div className="studio-note">
                     Everyone gets a path on this host, like{' '}
@@ -670,16 +1280,25 @@ export default function Editor() {
                       ? 'This published address is fixed. Your content can be updated any time.'
                       : addressStatus}
                   </output>
-                  <div className="studio-publish-summary">
-                    <Check size={18} />
-                    <span>
-                      {profile.name || 'Name needed'}
-                      <small>
-                        {profile.experience.length} experiences ·{' '}
-                        {profile.projects.length} projects
-                      </small>
-                    </span>
-                  </div>
+                  <ul className="studio-checklist">
+                    {readiness.map((c) => (
+                      <li key={c.label} className={c.done ? 'is-done' : ''}>
+                        {c.done ? <Check size={15} /> : <span aria-hidden />}
+                        <span>
+                          {c.label}
+                          <small>{c.detail}</small>
+                        </span>
+                        {!c.done && c.step !== undefined && (
+                          <button
+                            type="button"
+                            onClick={() => setStep(c.step as number)}
+                          >
+                            Fix this
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                   {!revision && (
                     <label className="studio-check">
                       <input
@@ -697,7 +1316,9 @@ export default function Editor() {
                   <button
                     className="studio-button full"
                     disabled={
-                      !online || (!revision && (!publishing || !consent))
+                      !online ||
+                      !ready ||
+                      (!revision && (!publishing || !consent))
                     }
                     onClick={publish}
                   >
@@ -729,17 +1350,39 @@ export default function Editor() {
                         </button>
                         <button
                           className="studio-button secondary"
+                          onClick={() => copy(editKey, 'Edit key')}
+                        >
+                          <Copy size={16} />
+                          Copy edit key
+                        </button>
+                        <button
+                          className="studio-button secondary"
                           onClick={() =>
                             download(
-                              `${slug}-edit-key.txt`,
-                              `Page: ${shareUrl}\nPrivate edit key: ${editKey}\nOpen ${origin}/edit to edit or remove your page.\nKeep this key private. Anyone with it can change or remove this page.\n`,
+                              `${slug}-little-room.txt`,
+                              [
+                                `Page address: ${shareUrl}`,
+                                `Private edit key: ${editKey}`,
+                                '',
+                                `Open ${origin}/edit and use the key to change or remove this page.`,
+                                'Keep the key private — anyone who has it can edit or delete your page.',
+                                '',
+                              ].join('\n'),
                             )
                           }
                         >
                           <Download size={16} />
-                          Save edit key
+                          Save as a file
                         </button>
                       </div>
+                      <p className="studio-key">
+                        <span>Your page address</span>
+                        <code>{shareUrl}</code>
+                      </p>
+                      <p className="studio-key">
+                        <span>Your edit key</span>
+                        <code>{editKey}</code>
+                      </p>
                       <p>
                         Keep the edit key somewhere safe. It’s the only way to
                         edit or remove your page from another device. Don’t
@@ -778,39 +1421,43 @@ export default function Editor() {
               )}
             </div>
           </div>
-          <details className="studio-reopen">
-            <summary>Already have a room? Open it to edit</summary>
-            <TextField
-              label="Page name"
-              value={openSlug}
-              onChange={setOpenSlug}
-              max={40}
-              placeholder="alex-smith"
-            />
-            <label className="studio-field">
-              <span>Private edit key</span>
-              <input
-                type="password"
-                value={openKey}
-                onChange={(e) => setOpenKey(e.target.value)}
-                autoComplete="off"
+          {!staticHosting && (
+            <details className="studio-reopen">
+              <summary>Already have a room? Open it to edit</summary>
+              <TextField
+                label="Page name"
+                value={openSlug}
+                onChange={setOpenSlug}
+                max={40}
+                placeholder="alex-smith"
               />
-            </label>
-            <button
-              className="studio-button secondary"
-              onClick={open}
-              disabled={busy || !online || !openKey}
-            >
-              Open my room
-            </button>
-          </details>
+              <label className="studio-field">
+                <span>Private edit key</span>
+                <input
+                  type="password"
+                  value={openKey}
+                  onChange={(e) => setOpenKey(e.target.value)}
+                  autoComplete="off"
+                />
+              </label>
+              <button
+                className="studio-button secondary"
+                onClick={open}
+                disabled={busy || !online || !openKey}
+              >
+                Open my room
+              </button>
+            </details>
+          )}
           <button
             className="studio-start-over"
             disabled={busy}
             onClick={() => {
               if (
                 window.confirm(
-                  'Start a fresh draft? Save your existing edit key first. Any published page will stay live, but its key will no longer be stored in this editor.',
+                  staticHosting
+                    ? 'Start a fresh draft? Download a backup first. Shared links will still work, but this browser draft will be replaced.'
+                    : 'Start a fresh draft? Save your existing edit key first. Any published page will stay live, but its key will no longer be stored in this editor.',
                 )
               ) {
                 setDraft(emptyDraft());

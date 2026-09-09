@@ -1,21 +1,105 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { floorShape, HATCH } from './room-geometry';
+import type { ShellKind } from '@/lib/profile';
 import * as THREE from 'three';
 import { Box, Cyl } from './props';
 import { ShelfPrint, WorkModel } from './attic-extras';
 
 // Cutaway reconstruction from Sophie's attic video; dimensions are approximate.
+/** Night-time knock-down of a chosen wall colour. */
+function shade(hex: string, mul = 0.76) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n >> 16) & 255) * mul),
+    g = Math.round(((n >> 8) & 255) * mul),
+    b = Math.round((n & 255) * mul);
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+}
+
+/**
+ * The non-pitched rooms. Same 9 x 7 floor plan and hatch as the attic, so all
+ * the furniture keeps its place — only the walls and ceiling change.
+ */
+const SHELLS = {
+  loft: { height: 3.5, ceiling: '#f2eee9', beams: 0, trim: '#e7e0d6' },
+  cabin: { height: 2.55, ceiling: '#e8d9c3', beams: 5, trim: '#a97f52' },
+  studio: { height: 3.0, ceiling: '#f6f4f1', beams: 0, trim: '#dcd6cf' },
+} as const;
+
+function FlatRoom({
+  shell,
+  night,
+  wall,
+}: {
+  shell: Exclude<ShellKind, 'attic'>;
+  night: boolean;
+  wall?: string;
+}) {
+  const spec = SHELLS[shell];
+  const h = spec.height;
+  const paint = (base: string) =>
+    night ? shade(wall ?? base) : (wall ?? base);
+  return (
+    <group>
+      {/* back and left walls */}
+      <Box args={[9, h, 0.1]} position={[0, h / 2, -3.5]} color={paint('#d8bfcd')} />
+      <Box args={[0.1, h, 7]} position={[-4.5, h / 2, 0]} color={paint('#ded0d4')} />
+      {/* Ceiling, as an L along the two walls only. A full slab would be a lid
+          over the cutaway and you would not be able to see into the room. */}
+      <Box args={[9, 0.12, 1.9]} position={[0, h + 0.06, -2.55]} color={spec.ceiling} />
+      <Box args={[1.9, 0.12, 5.1]} position={[-3.55, h + 0.06, 1.05]} color={spec.ceiling} />
+      {/* a rail where wall meets ceiling */}
+      <Box args={[9, 0.09, 0.09]} position={[0, h - 0.04, -3.44]} color={spec.trim} />
+      <Box args={[0.09, 0.09, 7]} position={[-4.44, h - 0.04, 0]} color={spec.trim} />
+
+      {/* cabin gets exposed beams across the ceiling */}
+      {spec.beams > 0 &&
+        Array.from({ length: spec.beams }, (_, i) => (
+          <Box
+            key={i}
+            args={[0.16, 0.2, 1.85]}
+            position={[-3.4 + i * 1.7, h - 0.12, -2.55]}
+            color={spec.trim}
+          />
+        ))}
+
+      {/* a tall window on the back wall, since there is no skylight */}
+      <group position={[2.6, h * 0.55, -3.44]}>
+        <Box args={[2.1, 1.5, 0.06]} color="#f6f2ec" />
+        <mesh position={[0, 0, 0.045]}>
+          <planeGeometry args={[1.85, 1.26]} />
+          <meshStandardMaterial
+            color={night ? '#2c3550' : '#bcd8ea'}
+            emissive={night ? '#1b2338' : '#cfe6f4'}
+            emissiveIntensity={night ? 0.5 : 1.1}
+            toneMapped={false}
+          />
+        </mesh>
+        <Box args={[0.07, 1.3, 0.03]} position={[0, 0, 0.06]} color="#f6f2ec" />
+        <Box args={[1.9, 0.07, 0.03]} position={[0, 0, 0.06]} color="#f6f2ec" />
+      </group>
+    </group>
+  );
+}
+
 export function AtticShell({
   night,
   motion,
   hatchOpen,
   onHatchToggle,
+  wall,
+  floor: floorColor,
+  shell = 'attic',
 }: {
   night: boolean;
   motion: boolean;
   hatchOpen: boolean;
   onHatchToggle: () => void;
+  /** Chosen in the studio; undefined keeps the original palette. */
+  wall?: string;
+  floor?: string;
+  /** Which kind of room to build around the same floor plan. */
+  shell?: ShellKind;
 }) {
   const lid = useRef<THREE.Group>(null);
   const floor = useMemo(() => floorShape(9, 7), []);
@@ -61,27 +145,38 @@ export function AtticShell({
       >
         <shapeGeometry args={[floor]} />
         <meshStandardMaterial
-          color="#e7e3d9"
+          color={floorColor ?? '#e7e3d9'}
           side={THREE.DoubleSide}
           roughness={1}
         />
       </mesh>
-      <mesh position={[0, 0, -3.54]} receiveShadow>
-        <shapeGeometry args={[gable]} />
-        <meshStandardMaterial
-          color={night ? '#9f8099' : '#d8bfcd'}
-          side={THREE.DoubleSide}
-          roughness={1}
+      {shell === 'attic' && (
+        <mesh position={[0, 0, -3.54]} receiveShadow>
+          <shapeGeometry args={[gable]} />
+          <meshStandardMaterial
+            color={night ? shade(wall ?? '#d8bfcd') : (wall ?? '#d8bfcd')}
+            side={THREE.DoubleSide}
+            roughness={1}
+          />
+        </mesh>
+      )}
+      {shell !== 'attic' && (
+        <FlatRoom
+          shell={shell}
+          night={night}
+          wall={wall}
         />
-      </mesh>
+      )}
+      {shell === 'attic' && (
       <Box
         args={[0.1, 1.55, 7]}
         position={[-4.55, 0.75, 0]}
-        color={night ? '#ad939f' : '#ded0d4'}
+        color={night ? shade(wall ?? '#ded0d4', 0.82) : (wall ?? '#ded0d4')}
       />
+      )}
       <Box args={[9, 0.14, 0.08]} position={[0, 0.08, -3.46]} color="#eddae1" />
       <Box args={[0.08, 0.14, 7]} position={[-4.46, 0.08, 0]} color="#eddae1" />
-      {[-1, 1].map((side) => (
+      {shell === 'attic' && [-1, 1].map((side) => (
         <group
           key={side}
           position={[side * 2.25, 3.1, -3.04]}
@@ -114,7 +209,9 @@ export function AtticShell({
           />
         </group>
       ))}
-      <Box args={[0.19, 0.2, 1.2]} position={[0, 4.67, -3]} color="#fff9f2" />
+      {shell === 'attic' && (
+        <Box args={[0.19, 0.2, 1.2]} position={[0, 4.67, -3]} color="#fff9f2" />
+      )}
       <group
         position={[HATCH.x, 0.025, HATCH.z]}
         onClick={(e) => {
@@ -195,17 +292,15 @@ export function AtticShell({
 export function WoodDesk({
   width = 3.6,
   depth = 1.2,
+  color = '#caa166',
 }: {
   width?: number;
   depth?: number;
+  color?: string;
 }) {
   return (
     <group>
-      <Box
-        args={[width, 0.11, depth]}
-        position={[0, 1.05, 0]}
-        color="#caa166"
-      />
+      <Box args={[width, 0.11, depth]} position={[0, 1.05, 0]} color={color} />
       <Box
         args={[width - 0.12, 0.16, 0.055]}
         position={[0, 0.94, -depth / 2 + 0.04]}
@@ -240,7 +335,7 @@ function beanbagSurface(x: number, y: number, z: number) {
   );
 }
 
-function Beanbag() {
+function Beanbag({ color }: { color?: string }) {
   const { geometry, seams } = useMemo(() => {
     const g = new THREE.SphereGeometry(1, 64, 48);
     const p = g.attributes.position;
@@ -268,12 +363,12 @@ function Beanbag() {
         castShadow
         receiveShadow
       >
-        <meshPhysicalMaterial color="#ce5687" roughness={0.96} sheen={0.65} sheenColor="#efb7cd" sheenRoughness={0.85} />
+        <meshPhysicalMaterial color={color ?? '#ce5687'} roughness={0.96} sheen={0.65} sheenColor="#efb7cd" sheenRoughness={0.85} />
       </mesh>
       {seams.map((curve, i) => (
         <mesh key={i}>
           <tubeGeometry args={[curve, 64, 0.004, 5, false]} />
-          <meshStandardMaterial color="#b54873" roughness={1} />
+          <meshStandardMaterial color={color ? shade(color, 0.86) : '#b54873'} roughness={1} />
         </mesh>
       ))}
       <Box
@@ -286,10 +381,10 @@ function Beanbag() {
   );
 }
 
-export function Beanbags() {
+export function Beanbags({ color }: { color?: string }) {
   return (
     <group position={[3.4, 0, 2.45]} rotation={[0, -2.3, 0]}>
-      <Beanbag />
+      <Beanbag color={color} />
     </group>
   );
 }

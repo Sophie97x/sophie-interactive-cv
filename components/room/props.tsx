@@ -1,4 +1,5 @@
 'use client';
+// Room objects adapted from Sophie's local cv3d version; original preserved.
 import { createContext, useContext, useRef } from 'react';
 import { useFrame as fiberFrame } from '@react-three/fiber';
 export const MotionContext = createContext(true);
@@ -726,17 +727,65 @@ export function Shelf({ position, rotation, scale = 1, levels = 3, w = 2.2 }: P 
   );
 }
 
-export function Rug({ position, scale = 1 }: P) {
+export function Rug({
+  position,
+  scale = 1,
+  color = '#8a5b57',
+}: P & { color?: string }) {
+  const trim = new THREE.Color(color).lerp(new THREE.Color('#ffffff'), 0.22).getStyle();
   return (
     <group position={position} scale={scale}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <circleGeometry args={[1.7, 28]} />
-        <meshStandardMaterial color="#8a5b57" roughness={1} />
+        <meshStandardMaterial color={color} roughness={1} />
       </mesh>
       <mesh position={[0, 0.002, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[1.15, 1.35, 28]} />
-        <meshStandardMaterial color="#a97a6d" roughness={1} />
+        <meshStandardMaterial color={trim} roughness={1} />
       </mesh>
+    </group>
+  );
+}
+
+/** Framed posters on the wall — one per colour the owner picked. */
+export function Posters({
+  colors,
+  position,
+  rotation,
+}: {
+  colors: string[];
+  position?: [number, number, number];
+  rotation?: [number, number, number];
+}) {
+  if (!colors.length) return null;
+  return (
+    <group position={position} rotation={rotation}>
+      {colors.slice(0, 3).map((c, i) => {
+        const x = (i - (colors.length - 1) / 2) * 0.78;
+        const tall = i % 2 === 0;
+        const w = tall ? 0.5 : 0.62;
+        const h = tall ? 0.66 : 0.46;
+        return (
+          <group key={i} position={[x, i % 2 === 0 ? 0 : 0.06, 0]}>
+            <mesh castShadow>
+              <boxGeometry args={[w + 0.05, h + 0.05, 0.02]} />
+              <meshStandardMaterial color="#f6f2ec" roughness={0.85} />
+            </mesh>
+            <mesh position={[0, 0, 0.013]}>
+              <planeGeometry args={[w, h]} />
+              <meshStandardMaterial color={c} roughness={0.9} />
+            </mesh>
+            {/* a simple motif so it reads as artwork rather than a swatch */}
+            <mesh position={[0, -h * 0.12, 0.015]}>
+              <circleGeometry args={[Math.min(w, h) * 0.22, 20]} />
+              <meshStandardMaterial
+                color={new THREE.Color(c).lerp(new THREE.Color('#ffffff'), 0.55).getStyle()}
+                roughness={0.9}
+              />
+            </mesh>
+          </group>
+        );
+      })}
     </group>
   );
 }

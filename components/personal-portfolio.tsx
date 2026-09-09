@@ -15,6 +15,7 @@ import World, { type PlaceId } from './room/world';
 import { RoomAppearance } from './room/appearance';
 import { PRINT_DURATION } from './room/print-motion';
 import type { Profile } from '@/lib/profile';
+import { sitePath, staticHosting } from '@/lib/site';
 
 export default function PersonalPortfolio({
   profile,
@@ -34,9 +35,13 @@ export default function PersonalPortfolio({
   const [failed, setFailed] = useState(false);
   const [ready, setReady] = useState(false);
   const [nightOverride, setNightOverride] = useState<boolean | null>(null);
-  const night = preview
-    ? profile.appearance.night
-    : (nightOverride ?? profile.appearance.night);
+  const initialNight = profile.room.timeOfDay === 'night';
+  const night = preview ? initialNight : (nightOverride ?? initialNight);
+  useEffect(() => {
+    if (!loved) return;
+    const timer = setTimeout(() => setLoved(false), 2400);
+    return () => clearTimeout(timer);
+  }, [loved]);
   const completed = printTime >= PRINT_DURATION;
   useEffect(() => {
     // Honour the visitor's motion preference on first load.
@@ -58,6 +63,12 @@ export default function PersonalPortfolio({
     focus === 'desk' || focus === 'work' || focus === 'repair'
       ? 'experience'
       : 'projects';
+  function jump(event: React.MouseEvent<HTMLAnchorElement>, id: string) {
+    if (!staticHosting || preview) return;
+    // Keep the CV snapshot in the URL while moving between sections.
+    event.preventDefault();
+    document.getElementById(id)?.scrollIntoView({ behavior: motion ? 'smooth' : 'instant' });
+  }
   return (
     <article
       className={`personal-page ${preview ? 'is-preview' : ''}`}
@@ -92,6 +103,14 @@ export default function PersonalPortfolio({
             }}
           >
             <World
+              room={{
+                ...profile.room,
+                timeOfDay: night
+                  ? 'night'
+                  : profile.room.timeOfDay === 'night'
+                    ? 'day'
+                    : profile.room.timeOfDay,
+              }}
               focus={focus}
               reset={reset}
               motion={motion}
@@ -143,6 +162,10 @@ export default function PersonalPortfolio({
             {night ? <Sun size={17} /> : <Moon size={17} />}
           </button>
           <button
+            hidden={
+              !profile.room.zones.includes('printer') ||
+              !profile.room.zones.includes('repair')
+            }
             onClick={() => {
               if (completed) {
                 setPrintTime(0);
@@ -168,13 +191,13 @@ export default function PersonalPortfolio({
       </p>
       {focus && (
         <div className="personal-focus">
-          <a href={`#${selectedSection}`}>Explore my {selectedSection} ↓</a>
+          <a href={`#${selectedSection}`} onClick={e => jump(e, selectedSection)}>Explore my {selectedSection} ↓</a>
         </div>
       )}
       <nav className="personal-section-nav" aria-label="CV sections">
-        <a href="#about">About</a>
-        <a href="#experience">Experience</a>
-        <a href="#projects">Projects</a>
+        <a href="#about" onClick={e => jump(e, 'about')}>About</a>
+        <a href="#experience" onClick={e => jump(e, 'experience')}>Experience</a>
+        <a href="#projects" onClick={e => jump(e, 'projects')}>Projects</a>
       </nav>
       <div className="personal-content">
         <section id="about">
@@ -237,7 +260,7 @@ export default function PersonalPortfolio({
       </div>
       {!preview && (
         <footer className="personal-footer">
-          <a href="/edit">Make your own little room ↗</a>
+          <a href={sitePath('edit/')}>Make your own little room ↗</a>
           <button onClick={() => window.print()}>Print / save as PDF</button>
         </footer>
       )}

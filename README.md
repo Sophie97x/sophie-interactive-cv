@@ -8,7 +8,28 @@ There's a tiny version of me at the desk, a wandering quail and a printer that m
 
 ## Make your own
 
-Open `/edit` to make your own version. Add your name, experience, projects and skills, change the avatar colours, then pick an address like `/alex-smith`.
+[Open the editor](https://sophie97x.github.io/sophie-interactive-cv/edit/). Add your story or import a CV, choose your room, colours, hair and pet, then create a share link. The preview changes as you type.
+
+The GitHub version is free and needs no account or API keys. Your CV is compressed into the link, not stored in a database. Anyone with the link can read or copy it. Each link is a snapshot: changes need a new link, and old links cannot be recalled. Keep the whole link, including everything after `#`; some apps may shorten or reject very long links.
+
+Drafts stay in your browser. Download a JSON backup before clearing browser data or moving devices, then import it on the first editor step. PDF, DOCX and text imports are read on your device, not uploaded. Check the results: scanned PDFs need selectable text or manual entry.
+
+### GitHub Pages
+
+The Pages workflow checks and builds the site when `main` changes. In repository Settings → Pages, use GitHub Actions as the source. It uses GitHub’s built-in deployment permissions; no extra secrets are needed. Forks can enable the same workflow. GitHub supplies the base path, so repository names and custom domains work without editing links.
+
+To test the Pages build locally:
+
+```sh
+VITE_STATIC_HOSTING=true PAGES_BASE_PATH=/sophie-interactive-cv npm run build
+node scripts/preview-pages.mjs
+```
+
+Open http://localhost:5194/sophie-interactive-cv/edit/.
+
+### Optional self-hosted publishing
+
+For short, editable addresses like `/alex-smith`, use the server below instead. GitHub Pages cannot run that server.
 
 The preview changes as you type. Drafts stay in your browser until you publish. Published pages are stored on the host and work for anyone with the link, on another device too. Each person gets a path on the host's domain, not a separately registered domain.
 

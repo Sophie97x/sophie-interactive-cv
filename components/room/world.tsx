@@ -16,7 +16,6 @@ import {
 } from '@react-three/fiber';
 import * as THREE from 'three';
 import Chair from './gaming-chair';
-import { RoomAppearance } from './appearance';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import {
   Box,
@@ -28,6 +27,9 @@ import {
   Brownies,
   Duck,
   PrintedBits,
+  Plant,
+  Rug,
+  Posters,
   MotionContext,
 } from './props';
 import {
@@ -39,7 +41,7 @@ import {
 } from './attic';
 
 import { Banner, RoofAntenna, Skylight, HomeLab } from './attic-extras';
-import { Quail } from './quail';
+import { Pet, PetCanUseDesk } from './pets';
 import { DeskAvatar } from './desk-avatar';
 import { DESK_LAYOUT } from './desk-motion';
 import {
@@ -54,6 +56,12 @@ import {
   constrainRoomPan,
   type ZoomCommand,
 } from './zoom';
+import {
+  defaultRoom,
+  zoneRequires,
+  type RoomOptions,
+  type ZoneId,
+} from '@/lib/profile';
 
 export const places = [
   {
@@ -126,7 +134,6 @@ function Screen({
   variant?: number;
 }) {
   const moving = useContext(MotionContext);
-  const { name, personalized } = useContext(RoomAppearance);
   const screenMaterial = useRef<THREE.MeshBasicMaterial>(null),
     screenTime = useRef(0);
   useFrame((_, dt) => {
@@ -156,36 +163,26 @@ function Screen({
     x.fillStyle = '#ecf1df';
     x.font = 'bold 43px monospace';
     x.fillText(
-      variant
-        ? 'little things, built.'
-        : `hello, i'm ${name.split(' ')[0].slice(0, 16) || 'you'} :)`,
+      variant ? 'little things, built.' : "hello, i'm sophie :)",
       34,
       116,
     );
     x.font = '23px monospace';
-    const lines = personalized
+    const lines = variant
       ? [
-          '> welcome to my little room',
-          '> a few things about me',
-          '> have a look around',
+          '> software + hardware',
+          '> ideas into working things',
+          '> always learning something',
           '',
-          '  [ explore my story ] ↗',
+          '  [ all projects ] ↗',
         ]
-      : variant
-        ? [
-            '> software + hardware',
-            '> ideas into working things',
-            '> always learning something',
-            '',
-            '  [ all projects ] ↗',
-          ]
-        : [
-            '> support. build. automate.',
-            '> Windows / Linux / networks',
-            '> Python / PowerShell / TypeScript',
-            '',
-            '  [ explore my journey ] ↗',
-          ];
+      : [
+          '> support. build. automate.',
+          '> Windows / Linux / networks',
+          '> Python / PowerShell / TypeScript',
+          '',
+          '  [ explore my journey ] ↗',
+        ];
     lines.forEach((s, i) => {
       x.fillStyle = i === 4 ? '#f4c197' : '#b5d1c2';
       x.fillText(s, 35, 177 + i * 47);
@@ -193,7 +190,7 @@ function Screen({
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
-  }, [variant, name, personalized]);
+  }, [variant]);
   useEffect(() => () => texture.dispose(), [texture]);
   return (
     <group position={position} rotation={rotation}>
@@ -596,6 +593,7 @@ function Marker({
 }
 
 function Room({
+  room,
   onSelect,
   onHover,
   printing,
@@ -621,36 +619,88 @@ function Room({
   onWindowToggle: () => void;
   hatchOpen: boolean;
   onHatchToggle: () => void;
+  room: RoomOptions;
 }) {
   const pick = (id: PlaceId) => (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     onSelect(id);
   };
+  /**
+   * Zones the owner chose to keep. Hidden ones are not rendered at all, and a
+   * zone that stands on another one goes with it — otherwise the 3D printer
+   * would be left floating where the workbench used to be.
+   */
+  const show = (id: ZoneId): boolean => {
+    if (!room.zones.includes(id)) return false;
+    const needs = zoneRequires[id];
+    return needs ? show(needs) : true;
+  };
+  // 'mirrored' flips the whole room left-to-right; 'cosy' shrinks it slightly
+  // so the walls sit closer in. Everything inside is untouched by either.
+  const flip = room.layout === 'mirrored' ? -1 : 1;
+  const snug = room.layout === 'cosy' ? 0.92 : 1;
   return (
     <MotionContext.Provider value={motion}>
-      <group>
+      <group scale={[flip * snug, snug, snug]}>
         <group scale={[1.25, 1, 1.3]}>
           <AtticShell
             night={night}
             motion={motion}
             hatchOpen={hatchOpen}
             onHatchToggle={onHatchToggle}
+            wall={room.wall}
+            floor={room.floor}
+            shell={room.shell}
           />
-          <RoofAntenna onSelect={() => onSelect('radio')} />
-          <Skylight
-            open={windowOpen}
-            onToggle={onWindowToggle}
-            night={night}
-            motion={motion}
-          />
+          {/* Both live in the pitched roof, so the flat-ceilinged rooms
+              get the wall window built into their shell instead. */}
+          {room.shell === 'attic' && (
+            <>
+              <RoofAntenna onSelect={() => onSelect('radio')} />
+              <Skylight
+                open={windowOpen}
+                onToggle={onWindowToggle}
+                night={night}
+                motion={motion}
+              />
+            </>
+          )}
         </group>
         <group position={[1, 0, 0.7]}>
-          <Beanbags />
+          <Beanbags color={room.beanbag} />
         </group>
-        <Quail motion={motion} loved={loved} onPet={onPet} />
+        {room.showRug && (
+          <Rug position={[0.6, 0.014, 1.5]} scale={0.85} color={room.rug} />
+        )}
+        {/* Pot plants dotted into the corners the furniture leaves free. */}
+        {[
+          [-3.9, 0, 2.3],
+          [4.1, 0, 2.4],
+          [-2.4, 0, -2.9],
+        ]
+          .slice(0, room.plants)
+          .map(([x, y, z]) => (
+            <Plant key={`${x}-${z}`} position={[x, y, z]} scale={1.5} />
+          ))}
+        {room.posters.length > 0 && (
+          <Posters
+            colors={room.posters}
+            position={[-3.05, 2.05, -3.5]}
+            rotation={[0, 0, 0]}
+          />
+        )}
+        <PetCanUseDesk.Provider value={show('desk')}><Pet
+          kind={room.pet}
+          color={room.petColor}
+          motion={motion}
+          loved={loved}
+          onPet={onPet}
+        /></PetCanUseDesk.Provider>
         <group position={[0.75, 0, 1]}>
+{show('desk') && (
+            <>
           <group position={[0.5, 0, -1.65]} onClick={pick('desk')}>
-            <WoodDesk width={4.3} depth={1.5} />
+            <WoodDesk width={4.3} depth={1.5} color={room.desk} />
             <Box
               args={[1.27, 0.01, 0.61]}
               position={[0, 1.11, -0.43]}
@@ -703,7 +753,10 @@ function Room({
           </group>
           <DeskAvatar motion={motion} />
           <PC motion={motion} />
+            </>
+          )}
         </group>
+        {show('homelab') && (
         <group
           position={[4.85, 0, 0.65]}
           rotation={[0, -Math.PI / 2, 0]}
@@ -711,16 +764,20 @@ function Room({
         >
           <HomeLab />
         </group>
+        )}
         <group position={[-1.05, 0, 0]}>
+          {show('repair') && (
           <group
             position={[-3.4, 0, 0.34]}
             rotation={[0, Math.PI / 2, 0]}
             onClick={pick('repair')}
           >
-            <WoodDesk width={2.8} depth={1.24} />
+            <WoodDesk width={2.8} depth={1.24} color={room.desk} />
             <PrintedBits position={[-0.92, 1.12, 0.1]} scale={1.2} />
             <Brownies position={[1.06, 1.155, 0.1]} />
           </group>
+          )}
+          {show('printer') && (
           <group onClick={pick('printer')}>
             <A1Printer
               printing={printing}
@@ -728,7 +785,9 @@ function Room({
               motion={motion}
             />
           </group>
+          )}
         </group>
+        {show('projects') && (
         <group
           position={[-1.55, 0, -3.9]}
           scale={0.85}
@@ -737,9 +796,13 @@ function Room({
         >
           <HobbyDisplay />
         </group>
+        )}
+        {show('work') && (
         <group position={[0.85, 0, -3.95]} onClick={pick('work')}>
           <WorkDisplay />
         </group>
+        )}
+        {show('radio') && (
         <group position={[3.5, 0, -3.64]} onClick={pick('radio')}>
           <Box
             args={[0.83, 1.55, 0.55]}
@@ -749,17 +812,25 @@ function Room({
           <MeshNode position={[0, 1.57, 0]} scale={1.25} />
           <MeshNode position={[0.21, 1.57, 0.09]} scale={0.7} />
         </group>
-        <group
-          position={[-4.6, 1.14, 1.27]}
-          onClick={(e) => {
-            e.stopPropagation();
-            onPet();
-          }}
-        >
-          <Cat scale={0.9} />
+        )}
+        {/* Sits on the workbench top, so it cannot outlive the bench. */}
+        {show('repair') && (
+          <group
+            position={[-4.6, 1.14, 1.27]}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPet();
+            }}
+          >
+            <Cat scale={0.9} />
+          </group>
+        )}
+        {/* Counter-flip so the lettering still reads left-to-right when the
+            room is mirrored. */}
+        <group scale={[flip, 1, 1]}>
+          <Banner text="HOBBIES" position={[-1.55 * flip, 2.8, -3.48]} width={1.4} />
+          <Banner text="WORK" position={[0.85 * flip, 3.04, -3.52]} width={1.5} />
         </group>
-        <Banner text="HOBBIES" position={[-1.55, 2.8, -3.48]} width={1.4} />
-        <Banner text="WORK" position={[0.85, 3.04, -3.52]} width={1.5} />
         {places.map((p) => (
           <Marker key={p.id} place={p} onSelect={onSelect} onHover={onHover} />
         ))}
@@ -769,12 +840,14 @@ function Room({
 }
 
 function CameraRig({
+  layout,
   focus,
   reset,
   motion,
   onReady,
   zoomCommand,
 }: {
+  layout: RoomOptions['layout'];
   focus: PlaceId | null;
   reset: number;
   motion: boolean;
@@ -827,9 +900,11 @@ function CameraRig({
   }, [camera, gl, invalidate, onReady]);
   useEffect(() => {
     const p = places.find((p) => p.id === focus);
-    const mobile = size.width < 700;
+    const mobile = size.width < 450;
     if (p) {
       target.current.set(p.position[0], p.position[1], p.position[2]);
+      if (layout === 'mirrored') target.current.x *= -1;
+      if (layout === 'cosy') target.current.multiplyScalar(0.92);
       target.current.y -= 0.5;
       position.current.copy(target.current).add(new THREE.Vector3(6.5, 5, 7.5));
     } else {
@@ -842,7 +917,7 @@ function CameraRig({
     }
     flying.current = true;
     invalidate();
-  }, [focus, reset, size.width, size.height, invalidate]);
+  }, [focus, reset, size.width, size.height, invalidate, layout]);
   useEffect(() => {
     if (handledZoom.current === zoomCommand.id || !controls.current) return;
     handledZoom.current = zoomCommand.id;
@@ -911,6 +986,7 @@ export default function World({
   onReady,
   onFail,
   zoomCommand,
+  room = defaultRoom,
 }: {
   focus: PlaceId | null;
   reset: number;
@@ -929,7 +1005,12 @@ export default function World({
   onReady: () => void;
   onFail: () => void;
   zoomCommand: ZoomCommand;
+  /** Studio choices: pet, palette, which zones are on show, arrangement. */
+  room?: RoomOptions;
 }) {
+  // 'golden' is a late-afternoon sun: lower, warmer and stronger.
+  const golden = room.timeOfDay === 'golden';
+  const dark = night || room.timeOfDay === 'night';
   return (
     <CanvasBoundary onFail={onFail}>
       <Canvas
@@ -946,12 +1027,16 @@ export default function World({
       >
         <ContextGuard onFail={onFail} />
         <hemisphereLight
-          args={[night ? '#a8becd' : '#fff4df', '#9a8d79', night ? 0.9 : 1.65]}
+          args={[
+            dark ? '#a8becd' : golden ? '#ffe0b8' : '#fff4df',
+            '#9a8d79',
+            dark ? 0.9 : golden ? 1.35 : 1.65,
+          ]}
         />
         <directionalLight
-          position={[3, 8, 6]}
-          color="#ffe4c7"
-          intensity={night ? 2 : 3.1}
+          position={golden ? [7, 3.4, 5] : [3, 8, 6]}
+          color={golden ? '#ffc98a' : '#ffe4c7'}
+          intensity={dark ? 2 : golden ? 3.4 : 3.1}
           castShadow
           shadow-mapSize={[1024, 1024]}
           shadow-camera-left={-7}
@@ -966,7 +1051,7 @@ export default function World({
           color="#b7dedb"
           intensity={0.8}
         />
-        {night && (
+        {dark && (
           <pointLight
             position={[0.1, 3, -1]}
             color="#ffb789"
@@ -975,6 +1060,7 @@ export default function World({
           />
         )}
         <Room
+          room={room}
           onSelect={onSelect}
           onHover={onHover}
           onPet={onPet}
@@ -984,11 +1070,12 @@ export default function World({
           windowOpen={windowOpen}
           onWindowToggle={onWindowToggle}
           motion={motion}
-          night={night}
+          night={dark}
           printing={printing}
           printTime={printTime}
         />
         <CameraRig
+          layout={room.layout}
           zoomCommand={zoomCommand}
           focus={focus}
           reset={reset}
