@@ -118,7 +118,10 @@ test('independent owners, page quotas and disabled registrations', async (t) => 
         ),
       ),
     );
-    assert.deepEqual(raced.map((r) => r.response.status).sort((a, b) => a - b), [201, 409]);
+    assert.deepEqual(
+      raced.map((r) => r.response.status).sort((a, b) => a - b),
+      [201, 409],
+    );
     assert.equal(
       (
         await request(
@@ -304,7 +307,10 @@ test('publishing API and static routes', async (t) => {
     assert.equal((await request(base, '/edit')).body, 'edit');
     assert.equal((await request(base, '/test-site')).body, 'view');
     result = await request(base, '/worker.mjs');
-    assert.equal(result.response.headers.get('content-type'), 'text/javascript');
+    assert.equal(
+      result.response.headers.get('content-type'),
+      'text/javascript',
+    );
     assert.equal(result.body, 'export default null;');
   });
 });
@@ -433,4 +439,127 @@ test('publishing rejects invalid writes and preserves data across restart', asyn
       404,
     );
   });
+});
+
+test('rejected origins do not spend the write budget', async (t) => {
+  const files = await fixture();
+  t.after(() => rm(files.dir, { recursive: true, force: true }));
+  await withApp(files, async (base) => {
+    for (let i = 0; i < 125; i++) {
+      const attempt = write({});
+      attempt.headers.Origin = 'https://unrelated.example';
+      const result = await request(
+        base,
+        i % 2 ? '/api/portfolios' : '/api/unlock/test-room',
+        attempt,
+      );
+      assert.equal(result.response.status, 403);
+      assert.equal(result.body.error, 'This request must come from this site.');
+    }
+    const created = await request(
+      base,
+      '/api/portfolios',
+      write({ slug: 'valid-owner', profile: profile() }),
+    );
+    assert.equal(created.response.status, 201);
+  });
+});
+
+test('trusted proxy required; client addresses are validated and budgets stay separate', async (t) => {
+  const files = await fixture();
+  t.after(() => rm(files.dir, { recursive: true, force: true }));
+  assert.throws(
+    () => createApp({ ...files, trustCloudflare: true }),
+    /TRUSTED_PROXY_IPS/,
+  );
+  await withApp(
+    { ...files, trustCloudflare: true, trustedProxyIps: ['192.0.2.100'] },
+    async (base) => {
+      assert.equal(
+        (
+          await request(base, '/api/config', {
+            headers: { 'CF-Connecting-IP': '192.0.2.1' },
+          })
+        ).response.status,
+        403,
+      );
+      assert.equal((await request(base, '/')).response.status, 403);
+      assert.equal((await request(base, '/healthz')).response.status, 200);
+    },
+  );
+  await withApp(
+    { ...files, trustCloudflare: true, trustedProxyIps: ['::ffff:127.0.0.1'] },
+    async (base) => {
+      for (const ip of [
+        undefined,
+        'unknown',
+        '192.0.2.1, 192.0.2.2',
+        'x'.repeat(1000),
+        'fe80::1%eth0',
+      ]) {
+        assert.equal(
+          (
+            await request(base, '/api/config', {
+              headers: ip ? { 'CF-Connecting-IP': ip } : {},
+            })
+          ).response.status,
+          403,
+        );
+      }
+      const unlockAs = async (ip) => {
+        const attempt = write({});
+        attempt.headers['CF-Connecting-IP'] = ip;
+        return request(base, '/api/unlock/no-such-room', attempt);
+      };
+      for (let i = 0; i < 120; i++)
+        assert.equal((await unlockAs('2001:db8::1')).response.status, 403);
+      assert.equal(
+        (await unlockAs('2001:0db8:0:0:0:0:0:1')).response.status,
+        429,
+      );
+      assert.equal((await unlockAs('2001:db8::2')).response.status, 403);
+      const attempt = write({ slug: 'proxy-owner', profile: profile() });
+      attempt.headers['CF-Connecting-IP'] = '192.0.2.5';
+      assert.equal(
+        (await request(base, '/api/portfolios', attempt)).response.status,
+        201,
+      );
+    },
+  );
+});
+
+test('direct mode ignores forged client headers and HTTPS origins send HSTS', async (t) => {
+  const files = await fixture();
+  t.after(() => rm(files.dir, { recursive: true, force: true }));
+  await withApp(files, async (base) => {
+    for (let i = 0; i < 121; i++) {
+      const attempt = write({});
+      attempt.headers['CF-Connecting-IP'] = `192.0.2.${i + 1}`;
+      assert.equal(
+        (await request(base, '/api/unlock/no-such-room', attempt)).response
+          .status,
+        i < 120 ? 403 : 429,
+      );
+    }
+    assert.equal(
+      (await request(base, '/')).response.headers.get(
+        'strict-transport-security',
+      ),
+      null,
+    );
+  });
+  const app = createApp({ ...files, origin: 'https://cv.example.com' });
+  const base = await listen(app);
+  try {
+    for (const path of ['/', '/api/config', '/not-found'])
+      assert.equal(
+        (await request(base, path)).response.headers.get(
+          'strict-transport-security',
+        ),
+        'max-age=31536000',
+      );
+  } finally {
+    await new Promise((resolve) => app.server.close(resolve));
+    app.close();
+  }
 });

@@ -10,7 +10,7 @@ Add your story or import a CV, choose your colours and pet, then share your room
 
 Drafts stay in your browser. PDF, DOCX and text imports are read on your device; check the results before publishing. Download a JSON backup before clearing browser data.
 
-On my site, choose a short address and keep your private edit key to update or remove your page. Anyone with that key can edit it, and there's no email recovery.
+Community pages are labelled as unverified and link back to my own CV at the home page. On my site, choose a short address and keep your private edit key to update or remove your page. Anyone with that key can edit it, and there's no email recovery.
 
 The [GitHub Pages editor](https://sophie97x.github.io/sophie-interactive-cv/edit/) also works without an account. It stores your CV in the share link instead of a database. Keep the entire link, including everything after `#`. These are public snapshots: old copies can't be recalled.
 
@@ -51,7 +51,9 @@ Point your Cloudflare Tunnel at `http://localhost:3000` if it runs on the same m
 
 - `ENABLE_PUBLISHING=false` closes new registrations; existing pages and edits still work.
 - `MAX_PROFILES` defaults to 1,000. Built-in write limits reset on restart.
-- Only set `TRUST_CLOUDFLARE=true` when the app is reachable exclusively through your tunnel.
+- For a tunnel, set `TRUST_CLOUDFLARE=true` and `TRUSTED_PROXY_IPS` to a comma-separated list of the exact connector peer IPs seen by the app. Configure both together before restarting: enabling trust without an allowlist refuses startup. Only those peers may access the site; they must supply a valid `CF-Connecting-IP`. `/healthz` remains available for local probes. Direct mode ignores forwarded headers and limits by socket IP.
+- Restrict port 3000 to the connector with the host/container firewall. If the connector runs inside the same LXC, bind `HOST=127.0.0.1`; a connector on another host needs the private container address and a narrow firewall allow rule. Do not switch an existing remote connector to a loopback-only listener.
+- HTTPS origins send HSTS for this hostname only; local HTTP development is unaffected.
 - Data stays in the `attic-data` volume. `docker compose down -v` deletes it.
 
 For GitHub Pages, choose **GitHub Actions** in Settings → Pages. The included workflow deploys `main`; only snapshot links are available there.

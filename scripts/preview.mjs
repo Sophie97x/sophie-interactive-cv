@@ -13,6 +13,10 @@ const app = createApp({
   maxProfiles: Number(process.env.MAX_PROFILES || 1000),
   publishing: process.env.ENABLE_PUBLISHING !== 'false',
   trustCloudflare: process.env.TRUST_CLOUDFLARE === 'true',
+  trustedProxyIps: (process.env.TRUSTED_PROXY_IPS || '')
+    .split(',')
+    .map((ip) => ip.trim())
+    .filter(Boolean),
 });
 app.server.listen(port, process.env.HOST || '127.0.0.1', () =>
   console.log(`Attic is ready on port ${port}. Public address: ${origin}`),
