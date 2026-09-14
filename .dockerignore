@@ -17,3 +17,5 @@ work
 *-edit-key.txt
 *.tsbuildinfo
 .npmrc
+.dev.vars*
+.wrangler

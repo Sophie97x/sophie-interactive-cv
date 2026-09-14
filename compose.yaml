@@ -9,6 +9,7 @@ services:
       MAX_PROFILES: ${MAX_PROFILES:-1000}
       ENABLE_PUBLISHING: ${ENABLE_PUBLISHING:-true}
       TRUST_CLOUDFLARE: ${TRUST_CLOUDFLARE:-false}
+      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS:-}
     volumes:
       - attic-data:/app/data
     read_only: true

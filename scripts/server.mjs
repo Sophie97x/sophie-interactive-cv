@@ -1,4 +1,5 @@
 import { createServer } from 'node:http';
+import { isIP } from 'node:net';
 import { DatabaseSync } from 'node:sqlite';
 import { randomBytes, createHash, timingSafeEqual } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
@@ -8,6 +9,21 @@ import { validSlug, validateProfile } from '../lib/profile.ts';
 
 const hash = (key) => createHash('sha256').update(key).digest();
 const fail = (status, message) => Object.assign(new Error(message), { status });
+function canonicalIp(value) {
+  if (typeof value !== 'string' || !isIP(value) || value.includes('%'))
+    throw fail(403, 'Invalid client address.');
+  if (isIP(value) === 4) return value;
+  const normalized = new URL(`http://[${value}]/`).hostname.slice(1, -1);
+  const mapped = /^::ffff:([0-9a-f]+):([0-9a-f]+)$/.exec(normalized);
+  if (!mapped) return normalized;
+  return mapped
+    .slice(1)
+    .flatMap((word) => {
+      const number = parseInt(word, 16);
+      return [number >> 8, number & 255];
+    })
+    .join('.');
+}
 const types = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript',
@@ -29,10 +45,22 @@ export function createApp({
   maxProfiles = 1000,
   publishing = true,
   trustCloudflare = false,
+  trustedProxyIps = [],
 } = {}) {
   const publicOrigin = new URL(origin).origin;
   if (!Number.isInteger(maxProfiles) || maxProfiles < 1)
     throw new Error('MAX_PROFILES must be a positive integer.');
+  if (!Array.isArray(trustedProxyIps))
+    throw new Error('TRUSTED_PROXY_IPS must be a list of exact IP addresses.');
+  const trustedPeers = new Set(trustedProxyIps.map(canonicalIp));
+  if (trustCloudflare && !trustedPeers.size)
+    throw new Error('Set TRUSTED_PROXY_IPS to the tunnel connector peer IPs.');
+  function clientIp(req) {
+    const peer = canonicalIp(req.socket.remoteAddress);
+    if (!trustCloudflare) return peer;
+    if (!trustedPeers.has(peer)) throw fail(403, 'Untrusted proxy.');
+    return canonicalIp(req.headers['cf-connecting-ip']);
+  }
   mkdirSync(dirname(resolve(dbPath)), { recursive: true, mode: 0o700 });
   const db = new DatabaseSync(dbPath);
   db.exec(
@@ -44,9 +72,7 @@ export function createApp({
   function rate(req, kind, limit) {
     const now = Date.now();
     for (const [key, b] of buckets) if (b.until < now) buckets.delete(key);
-    const ip = trustCloudflare
-      ? String(req.headers['cf-connecting-ip'] || req.socket.remoteAddress)
-      : req.socket.remoteAddress;
+    const ip = clientIp(req);
     const key = `${kind}:${ip}`;
     let b = buckets.get(key);
     if (!b) {
@@ -57,13 +83,15 @@ export function createApp({
     if (++b.count > limit)
       throw fail(429, 'Too many requests. Please try again in an hour.');
   }
-  async function body(req) {
+  function writeHeaders(req) {
     if (req.headers.origin !== publicOrigin)
       throw fail(403, 'This request must come from this site.');
     if (
       !/^application\/json(?:\s*;|$)/i.test(req.headers['content-type'] || '')
     )
       throw fail(415, 'Send JSON.');
+  }
+  async function body(req) {
     let size = 0;
     const chunks = [];
     await new Promise((resolveBody, rejectBody) => {
@@ -108,6 +136,8 @@ export function createApp({
     }
   };
   const server = createServer(async (req, res) => {
+    if (publicOrigin.startsWith('https:'))
+      res.setHeader('Strict-Transport-Security', 'max-age=31536000');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('X-Frame-Options', 'DENY');
@@ -126,6 +156,8 @@ export function createApp({
         db.prepare('SELECT 1').get();
         return json(res, 200, { ok: true });
       }
+      // Health probes stay available locally; all other traffic must use the trusted tunnel.
+      clientIp(req);
       if (pathname.startsWith('/api/')) {
         if (pathname === '/api/config' && req.method === 'GET')
           return json(res, 200, { publishing, origin: publicOrigin });
@@ -140,6 +172,7 @@ export function createApp({
         }
         const unlock = /^\/api\/unlock\/([^/]+)$/.exec(pathname);
         if (unlock && req.method === 'POST') {
+          writeHeaders(req);
           rate(req, 'write', 120);
           await body(req);
           const row = get.get(unlock[1]);
@@ -169,6 +202,7 @@ export function createApp({
         }
         if (!['POST', 'PUT', 'DELETE'].includes(req.method))
           throw fail(405, 'Method not allowed.');
+        writeHeaders(req);
         rate(req, 'write', 120);
         const data = await body(req);
         if (req.method === 'POST' && !slug) {

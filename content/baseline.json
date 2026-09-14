@@ -201,7 +201,7 @@
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I cleaned and matched asset, employee and cost-code records ready for the move to Setyl.",
+      "description": "I cleaned and matched asset, employee and cost-code records ready for an asset-management migration.",
       "kind": "milestone"
     },
     {
@@ -338,14 +338,14 @@
     },
     {
       "id": "m-isb-fix",
-      "title": "Offline image viewer failure in the Alarm Receiving Centre",
+      "title": "Resolved a desktop application fault",
       "date": "2024-11",
       "year": 2024,
       "category": "endpoint",
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I traced a broken image viewer to file permissions on new PCs, fixed it with the Windows team and requested a repeatable solution.",
+      "description": "I investigated a desktop application issue with the Windows team and helped establish a repeatable fix.",
       "kind": "milestone"
     },
     {
@@ -361,15 +361,15 @@
       "kind": "milestone"
     },
     {
-      "id": "m-firewall",
-      "title": "Scheduled firewall change for the contact centre",
+      "id": "m-network-change",
+      "title": "Coordinated a planned network change",
       "date": "2024-11",
       "year": 2024,
       "category": "infrastructure",
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I coordinated a contact-centre firewall change, briefed the teams and stayed on site to support the switch.",
+      "description": "I coordinated a planned network change, briefed the affected teams and supported the transition.",
       "kind": "milestone"
     },
     {
@@ -385,15 +385,15 @@
       "kind": "milestone"
     },
     {
-      "id": "m-water-detection",
-      "title": "Comms-room water detection system",
+      "id": "m-facilities-resilience",
+      "title": "Facilities resilience project",
       "date": "2024-11",
       "year": 2024,
       "category": "infrastructure",
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I took a water-detection system from idea to installation, working with suppliers and Facilities to protect comms rooms and the wider building.",
+      "description": "I took a facilities improvement from idea to installation, coordinating suppliers and internal teams.",
       "kind": "milestone"
     },
     {
@@ -433,15 +433,15 @@
       "kind": "milestone"
     },
     {
-      "id": "m-bt-trunk",
-      "title": "BT trunk swap, London to Newcastle",
+      "id": "m-voice-migration",
+      "title": "Business voice-service migration",
       "date": "2025-01",
       "year": 2025,
       "category": "telecoms",
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I coordinated the move of the business voice connection from London to Newcastle.",
+      "description": "I coordinated a business voice-service migration between sites.",
       "kind": "milestone"
     },
     {
@@ -518,14 +518,14 @@
     },
     {
       "id": "m-autopilot-rollout",
-      "title": "Windows Autopilot and Intune rollout, Newcastle HQ",
+      "title": "Windows Autopilot and Intune rollout",
       "date": "2025-06 → 2025-11",
       "year": 2025,
       "category": "endpoint",
       "status": "delivered",
       "metrics": [],
       "stack": [],
-      "description": "I planned and ran a large PC rollout at Newcastle HQ, coordinating rebuilds and replacements department by department so people could keep working.",
+      "description": "I planned and ran a large PC rollout, coordinating rebuilds and replacements department by department so people could keep working.",
       "kind": "milestone"
     },
     {

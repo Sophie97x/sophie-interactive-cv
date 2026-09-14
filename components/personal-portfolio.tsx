@@ -84,6 +84,12 @@ export default function PersonalPortfolio({
           </a>
         </div>
       )}
+      {!preview && (
+        <p className="personal-community-notice">
+          Community-created CV · Identity and claims are not verified.{' '}
+          <a href={sitePath()}>Visit Sophie’s own CV ↗</a>
+        </p>
+      )}
       <header className="personal-intro">
         <span className="studio-eyebrow">A little room. My whole story.</span>
         <h1>
