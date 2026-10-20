@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { encodeRoom, decodeRoom } from '../lib/share.ts';
 import { defaultProfile, validateProfile } from '../lib/profile.ts';
+import { zipSync, strToU8 } from 'fflate';
 import { importCvFile } from '../lib/cv-import.ts';
 import { petPose } from '../components/room/pet-motion.ts';
 
@@ -70,4 +71,18 @@ test('JSON backups validate data and preserve room customisation', async () => {
 });
 test('pets never jump onto a hidden desk', () => {
   for (let t = 0; t < 180; t += 0.2) assert.ok(petPose(t, false).y < 0.1);
+});
+
+// Exercise the actual DOCX import boundary rather than a second decoder.
+test('DOCX entities decode once while imported text remains literal', async () => {
+  const paragraph = text => `<w:p><w:r><w:t>${text}</w:t></w:r></w:p>`;
+  const xml = `<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${[
+    'Alex Test', 'Maker &amp;lt;img src=x&amp;gt;', 'alex@example.com',
+    'Summary', 'Builds tools &amp; gardens &lt;safely&gt;.', 'Skills', 'Writing and design',
+  ].map(paragraph).join('')}</w:body></w:document>`;
+  const file = new File([zipSync({'word/document.xml': strToU8(xml)})], 'sample.docx');
+  const result = await importCvFile(file);
+  assert.equal(result.profile.name, 'Alex Test');
+  assert.equal(result.profile.headline, 'Maker &lt;img src=x&gt;');
+  assert.ok(JSON.stringify(result.profile).includes('tools & gardens <safely>'));
 });
