@@ -27,20 +27,20 @@ const MAX_BYTES = 8 * 1024 * 1024;
 /* ------------------------------------------------------------ file → text */
 
 function stripXml(xml: string) {
-  // Keep DOCX layout delimiters, then use an XML parser to extract text rather
-  // than treating markup removal as HTML sanitisation.
-  const normalized = xml
-    .replace(/<w:p[ >]/g, '\n<w:p ')
-    .replace(/<\/w:p>/g, '\n')
-    .replace(/<w:br\s*\/?>/g, '\n')
-    .replace(/<w:tab\s*\/?>/g, '\t');
-  if (typeof DOMParser !== 'undefined')
-    return new DOMParser().parseFromString(normalized, 'application/xml').textContent ?? '';
-
-  // The import tests also run under Node, which has no DOMParser. DOCX text
-  // nodes cannot contain nested XML elements, so this is an equivalent parser
-  // for that environment rather than a general-purpose HTML cleaner.
-  return decodeXmlEntities(normalized.replace(/<[^>]*>/g, ''));
+  let text = '';
+  for (let index = 0; index < xml.length; index += 1) {
+    if (xml[index] !== '<') {
+      text += xml[index];
+      continue;
+    }
+    const end = xml.indexOf('>', index);
+    if (end === -1) break;
+    const tag = xml.slice(index + 1, end).trim().toLowerCase();
+    if (tag === '/w:p' || tag.startsWith('w:p ') || tag === 'w:p' || tag.startsWith('w:br') || tag.startsWith('w:tab'))
+      text += tag.startsWith('w:tab') ? '\t' : '\n';
+    index = end;
+  }
+  return decodeXmlEntities(text);
 }
 
 function decodeXmlEntities(value: string) {
