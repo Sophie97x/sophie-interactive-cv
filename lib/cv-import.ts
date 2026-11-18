@@ -40,12 +40,30 @@ function stripXml(xml: string) {
   // The import tests also run under Node, which has no DOMParser. DOCX text
   // nodes cannot contain nested XML elements, so this is an equivalent parser
   // for that environment rather than a general-purpose HTML cleaner.
-  return normalized
-    .replace(/<[^>]*>/g, '')
-    .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (entity) => ({
-      '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
-      '&apos;': "'", '&nbsp;': ' ', '&#39;': "'",
-    })[entity] ?? entity);
+  return decodeXmlEntities(normalized.replace(/<[^>]*>/g, ''));
+}
+
+function decodeXmlEntities(value: string) {
+  const entities: Record<string, string> = {
+    '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
+    '&apos;': "'", '&nbsp;': ' ', '&#39;': "'",
+  };
+  let result = '';
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] !== '&') {
+      result += value[index];
+      continue;
+    }
+    const end = value.indexOf(';', index);
+    const entity = end === -1 ? '' : value.slice(index, end + 1);
+    if (!entities[entity]) {
+      result += value[index];
+      continue;
+    }
+    result += entities[entity];
+    index = end;
+  }
+  return result;
 }
 
 async function docxToText(buf: ArrayBuffer) {
