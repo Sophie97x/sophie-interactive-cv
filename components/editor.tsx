@@ -562,6 +562,7 @@ export default function Editor() {
     }
   }
   const shareUrl = `${origin}/${slug || 'your-name'}`;
+  const publishedPath = validSlug(slug) ? `/${slug}` : '/';
 
   /*
    * What still stands between this draft and a published page. The publish
@@ -1415,7 +1416,7 @@ export default function Editor() {
                   {revision > 0 && (
                     <div className="studio-published">
                       <h3>Your door is open.</h3>
-                      <a href={`/${slug}`} target="_blank" rel="noreferrer">
+                      <a href={publishedPath} target="_blank" rel="noreferrer">
                         {shareUrl} ↗
                       </a>
                       <div className="studio-actions">

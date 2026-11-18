@@ -27,23 +27,43 @@ const MAX_BYTES = 8 * 1024 * 1024;
 /* ------------------------------------------------------------ file → text */
 
 function stripXml(xml: string) {
-  return (
-    xml
-      // keep paragraph and line breaks as newlines before tags are dropped
-      .replace(/<w:p[ >]/g, '\n<w:p ')
-      .replace(/<\/w:p>/g, '\n')
-      .replace(/<w:br\s*\/?>/g, '\n')
-      .replace(/<w:tab\s*\/?>/g, '\t')
-      .replace(/<[^>]+>/g, '')
-      // Extract plain text, decoding each source entity exactly once.
-      .replace(/&(amp|lt|gt|quot|#39|apos|nbsp);/g, (entity) => {
-        const decoded: Record<string, string> = {
-          '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
-          '&#39;': "'", '&apos;': "'", '&nbsp;': ' ',
-        };
-        return decoded[entity];
-      })
-  );
+  let text = '';
+  for (let index = 0; index < xml.length; index += 1) {
+    if (xml[index] !== '<') {
+      text += xml[index];
+      continue;
+    }
+    const end = xml.indexOf('>', index);
+    if (end === -1) break;
+    const tag = xml.slice(index + 1, end).trim().toLowerCase();
+    if (tag === '/w:p' || tag.startsWith('w:p ') || tag === 'w:p' || tag.startsWith('w:br') || tag.startsWith('w:tab'))
+      text += tag.startsWith('w:tab') ? '\t' : '\n';
+    index = end;
+  }
+  return decodeXmlEntities(text);
+}
+
+function decodeXmlEntities(value: string) {
+  const entities: Record<string, string> = {
+    '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
+    '&apos;': "'", '&nbsp;': ' ', '&#39;': "'",
+  };
+  let result = '';
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] !== '&') {
+      result += value[index];
+      continue;
+    }
+    const end = value.indexOf(';', index);
+    const entity = end === -1 ? '' : value.slice(index, end + 1);
+    if (!entities[entity]) {
+      result += value[index];
+      continue;
+    }
+    result += entities[entity];
+    index = end;
+  }
+  return result;
 }
 
 async function docxToText(buf: ArrayBuffer) {
