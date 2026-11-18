@@ -27,23 +27,25 @@ const MAX_BYTES = 8 * 1024 * 1024;
 /* ------------------------------------------------------------ file → text */
 
 function stripXml(xml: string) {
-  return (
-    xml
-      // keep paragraph and line breaks as newlines before tags are dropped
-      .replace(/<w:p[ >]/g, '\n<w:p ')
-      .replace(/<\/w:p>/g, '\n')
-      .replace(/<w:br\s*\/?>/g, '\n')
-      .replace(/<w:tab\s*\/?>/g, '\t')
-      .replace(/<[^>]+>/g, '')
-      // Extract plain text, decoding each source entity exactly once.
-      .replace(/&(amp|lt|gt|quot|#39|apos|nbsp);/g, (entity) => {
-        const decoded: Record<string, string> = {
-          '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
-          '&#39;': "'", '&apos;': "'", '&nbsp;': ' ',
-        };
-        return decoded[entity];
-      })
-  );
+  // Keep DOCX layout delimiters, then use an XML parser to extract text rather
+  // than treating markup removal as HTML sanitisation.
+  const normalized = xml
+    .replace(/<w:p[ >]/g, '\n<w:p ')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<w:br\s*\/?>/g, '\n')
+    .replace(/<w:tab\s*\/?>/g, '\t');
+  if (typeof DOMParser !== 'undefined')
+    return new DOMParser().parseFromString(normalized, 'application/xml').textContent ?? '';
+
+  // The import tests also run under Node, which has no DOMParser. DOCX text
+  // nodes cannot contain nested XML elements, so this is an equivalent parser
+  // for that environment rather than a general-purpose HTML cleaner.
+  return normalized
+    .replace(/<[^>]*>/g, '')
+    .replace(/&(?:amp|lt|gt|quot|apos|nbsp|#39);/g, (entity) => ({
+      '&amp;': '&', '&lt;': '<', '&gt;': '>', '&quot;': '"',
+      '&apos;': "'", '&nbsp;': ' ', '&#39;': "'",
+    })[entity] ?? entity);
 }
 
 async function docxToText(buf: ArrayBuffer) {
